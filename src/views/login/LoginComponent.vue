@@ -2,31 +2,60 @@
 import InputLabel from '../../components/InputLabel.vue'
 import InputError from '../../components/InputError.vue'
 import PrimaryButton from '../../components/PrimaryButton.vue'
+import TextInput from '../../components/TextInput.vue'
+import { reactive } from 'vue'
+import axios from 'axios'
+
+const emit = defineEmits(['errMessageLabel'])
+const form = reactive({
+  username: null,
+  password: null
+})
+
+const sendData = () => {
+  axios
+    .post('http://localhost:3000/api/login', {
+      username: form.username,
+      password: form.password
+    })
+    .then((res) => {
+      axios.defaults.headers.common['Authorization'] = res.data.data.token
+    })
+    .catch((err) => {
+      emit('errMessageLabel', err.response.data.errors)
+    })
+}
 </script>
 <template>
-  <form>
+  <form @submit.prevent="sendData">
     <div class="space-y-4">
       <div>
         <InputLabel>Username</InputLabel>
-        <input
+        <TextInput
+          class="mt-1 block w-full"
           type="text"
-          class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm mt-1 block w-full"
+          v-model="form.username"
+          required
+          autofocus
         />
         <InputError />
       </div>
 
       <div>
         <InputLabel>Password</InputLabel>
-        <input
-          type="text"
-          class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm mt-1 block w-full"
+        <TextInput
+          class="mt-1 block w-full"
+          type="password"
+          v-model="form.password"
+          required
+          autofocus
         />
         <InputError />
       </div>
     </div>
 
     <div class="flex items-center justify-end mt-4">
-      <PrimaryButton>Masuk</PrimaryButton>
+      <PrimaryButton type="submit">Masuk</PrimaryButton>
     </div>
   </form>
 </template>
