@@ -3,7 +3,7 @@ import InputLabel from '../../components/InputLabel.vue'
 import InputError from '../../components/InputError.vue'
 import PrimaryButton from '../../components/PrimaryButton.vue'
 import TextInput from '../../components/TextInput.vue'
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
 import axios from 'axios'
 
 const emit = defineEmits(['errMessageLabel'])
@@ -11,6 +11,7 @@ const form = reactive({
   username: null,
   password: null
 })
+const validation = ref([])
 
 const sendData = () => {
   axios
@@ -22,7 +23,12 @@ const sendData = () => {
       axios.defaults.headers.common['Authorization'] = res.data.data.token
     })
     .catch((err) => {
-      emit('errMessageLabel', err.response.data.errors)
+      if (err.response.status == 404) {
+        validation.value = []
+        emit('errMessageLabel', err.response.data.errors)
+      } else {
+        validation.value = err.response.data.errors
+      }
     })
 }
 </script>
@@ -31,26 +37,14 @@ const sendData = () => {
     <div class="space-y-4">
       <div>
         <InputLabel>Username</InputLabel>
-        <TextInput
-          class="mt-1 block w-full"
-          type="text"
-          v-model="form.username"
-          required
-          autofocus
-        />
-        <InputError />
+        <TextInput class="mt-1 block w-full" type="text" v-model="form.username" autofocus />
+        <InputError v-if="validation.username" :message="validation.username._errors[0]" />
       </div>
 
       <div>
         <InputLabel>Password</InputLabel>
-        <TextInput
-          class="mt-1 block w-full"
-          type="password"
-          v-model="form.password"
-          required
-          autofocus
-        />
-        <InputError />
+        <TextInput class="mt-1 block w-full" type="password" v-model="form.password" autofocus />
+        <InputError v-if="validation.password" :message="validation.password._errors[0]" />
       </div>
     </div>
 
