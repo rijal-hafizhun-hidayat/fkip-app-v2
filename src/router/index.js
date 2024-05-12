@@ -10,8 +10,6 @@ import RoleIndexComponent from '../views/role/components/RoleIndexComponent.vue'
 import RoleCreateComponent from '../views/role/components/RoleCreateComponent.vue'
 
 const router = createRouter({
-  linkActiveClass: 'border-indigo-500',
-  linkExactActiveClass: 'border-indigo-700',
   history: createWebHistory(
     import.meta.env.BASE_URL),
   routes: [{
@@ -22,7 +20,10 @@ const router = createRouter({
     {
       path: '/dashboard',
       name: 'dashboard.index',
-      component: DashboardView
+      component: DashboardView,
+      meta: {
+        requiresAuth: true,
+      }
     },
     {
       path: '/role',
@@ -30,12 +31,18 @@ const router = createRouter({
       children: [{
           path: '',
           name: 'role.index',
-          component: RoleIndexComponent
+          component: RoleIndexComponent,
+          meta: {
+            requiresAuth: true
+          }
         },
         {
           path: 'create',
           name: 'role.create',
-          component: RoleCreateComponent
+          component: RoleCreateComponent,
+          meta: {
+            requiresAuth: true
+          }
         }
       ]
     },
@@ -48,6 +55,14 @@ const router = createRouter({
       component: () => import('../views/AboutView.vue')
     }
   ]
+})
+
+router.beforeEach((to) => {
+  if (!sessionStorage.getItem('isLoggedIn') && to.meta.requiresAuth && to.name !== 'login') {
+    return {
+      name: 'login'
+    }
+  }
 })
 
 export default router
