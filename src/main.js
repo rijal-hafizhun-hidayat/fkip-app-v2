@@ -11,7 +11,9 @@ import {
 import App from './App.vue'
 import router from './router'
 
-axios.defaults.headers.common['Authorization'] = localStorage.getItem("token");
+axios.defaults.headers.common = {
+    'Authorization': `Bearer ${sessionStorage.getItem("token")}`
+}
 axios.defaults.baseURL = 'http://localhost:3000';
 axios.defaults.withCredentials = true
 
