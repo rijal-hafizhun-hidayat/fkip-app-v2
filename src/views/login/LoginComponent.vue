@@ -5,7 +5,11 @@ import PrimaryButton from '../../components/PrimaryButton.vue'
 import TextInput from '../../components/TextInput.vue'
 import { reactive, ref } from 'vue'
 import axios from 'axios'
+import { userAuthStore } from '@/stores/auth'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
+const user = userAuthStore()
 const emit = defineEmits(['errMessageLabel'])
 const form = reactive({
   username: null,
@@ -13,14 +17,19 @@ const form = reactive({
 })
 const validation = ref([])
 
-const sendData = () => {
-  axios
-    .post('http://localhost:3000/api/login', {
+const sendData = async () => {
+  await axios
+    .post('api/login', {
       username: form.username,
       password: form.password
     })
     .then((res) => {
-      axios.defaults.headers.common['Authorization'] = res.data.data.token
+      user.setDataAuth(res.data.data)
+      user.isLoggedIn = true
+      sessionStorage.setItem('isLoggedIn', true)
+      router.push({
+        name: 'dashboard.index'
+      })
     })
     .catch((err) => {
       if (err.response.status == 404) {
