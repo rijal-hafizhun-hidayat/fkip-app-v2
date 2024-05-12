@@ -26,6 +26,7 @@ const sendData = async () => {
     .then((res) => {
       user.setDataAuth(res.data.data)
       user.isLoggedIn = true
+      sessionStorage.setItem('token', res.data.data.token)
       sessionStorage.setItem('isLoggedIn', true)
       router.push({
         name: 'dashboard.index'
