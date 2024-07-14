@@ -1,5 +1,5 @@
 <script setup>
-import LoginComponent from './LoginComponent.vue'
+import LoginComponent from './components/LoginComponent.vue'
 import GuestLayout from '../../layouts/GuestLayout.vue'
 import AlertLabel from '../../components/AlertLabel.vue'
 import { ref } from 'vue'

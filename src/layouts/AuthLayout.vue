@@ -3,13 +3,20 @@ import ApplicationLogo from '../components/ApplicationLogo.vue'
 import Dropdown from '../components/Dropdown.vue'
 import { ref } from 'vue'
 import { userAuthStore } from '@/stores/auth'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const auth = userAuthStore()
+auth.user.token = sessionStorage.getItem('token')
+auth.user.name = sessionStorage.getItem('name')
 const showingNavigationDropdown = ref(false)
-if (auth.user === null) {
-  auth.user = auth.getCurrentAuth()
+
+const logout = () => {
+  sessionStorage.clear()
+  return router.push({
+    name: 'login'
+  })
 }
-console.log(auth.user)
 </script>
 <template>
   <div>
@@ -73,6 +80,7 @@ console.log(auth.user)
                       Log Out
                     </DropdownLink> -->
                     <a
+                      @click="logout()"
                       class="cursor-pointer block w-full px-4 py-2 text-left text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition duration-150 ease-in-out"
                     >
                       Logout
@@ -142,7 +150,7 @@ console.log(auth.user)
               <div class="font-medium text-base text-gray-800">
                 {{ auth.user.name }}
               </div>
-              <div class="font-medium text-sm text-gray-500">{{ auth.user.email }}</div>
+              <div class="font-medium text-sm text-gray-500">{{ auth.user.name }}</div>
             </div>
 
             <div class="mt-3 space-y-1">
