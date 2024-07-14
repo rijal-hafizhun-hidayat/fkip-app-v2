@@ -1,5 +1,6 @@
 // import './assets/main.css'
 import "./style.css";
+import moment from "moment";
 import axios from 'axios'
 import {
     createApp
@@ -17,8 +18,11 @@ axios.defaults.headers.common = {
 axios.defaults.baseURL = 'http://localhost:3000';
 axios.defaults.withCredentials = true
 
+moment.locale('id');
+
 const app = createApp(App)
 
+app.provide("moment", moment);
 app.use(createPinia())
 app.use(router)
 

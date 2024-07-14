@@ -1,15 +1,15 @@
 <script setup>
-import InputLabel from '../../components/InputLabel.vue'
-import InputError from '../../components/InputError.vue'
-import PrimaryButton from '../../components/PrimaryButton.vue'
-import TextInput from '../../components/TextInput.vue'
+import InputLabel from '../../../components/InputLabel.vue'
+import InputError from '../../../components/InputError.vue'
+import PrimaryButton from '../../../components/PrimaryButton.vue'
+import TextInput from '../../../components/TextInput.vue'
 import { reactive, ref } from 'vue'
 import axios from 'axios'
 import { userAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
-const user = userAuthStore()
+const auth = userAuthStore()
 const emit = defineEmits(['errMessageLabel'])
 const form = reactive({
   username: null,
@@ -17,17 +17,21 @@ const form = reactive({
 })
 const validation = ref([])
 
-const sendData = async () => {
-  await axios
+const sendData = () => {
+  axios
     .post('api/login', {
       username: form.username,
       password: form.password
     })
     .then((res) => {
-      user.setDataAuth(res.data.data)
-      user.isLoggedIn = true
+      auth.user.token = res.data.data.token
+      auth.user.name = res.data.data.name
+
       sessionStorage.setItem('token', res.data.data.token)
+      sessionStorage.setItem('name', res.data.data.name)
+
       sessionStorage.setItem('isLoggedIn', true)
+
       router.push({
         name: 'dashboard.index'
       })
