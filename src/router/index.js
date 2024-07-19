@@ -5,9 +5,9 @@ import {
 // import HomeView from '../views/HomeView.vue'
 import LoginView from '@/views/login/LoginView.vue'
 import DashboardView from '@/views/dashboard/DashboardView.vue'
-import RoleView from '@/views/role/RoleView.vue'
-import RoleIndexComponent from '../views/role/components/RoleIndexComponent.vue'
-import RoleCreateComponent from '../views/role/components/RoleCreateComponent.vue'
+import RoleIndexView from '../views/role/IndexView.vue'
+import RoleCreateView from '../views/role/CreateView.vue'
+import RoleShowView from '../views/role/ShowView.vue'
 
 const router = createRouter({
   history: createWebHistory(
@@ -27,11 +27,10 @@ const router = createRouter({
     },
     {
       path: '/role',
-      component: RoleView,
       children: [{
           path: '',
           name: 'role.index',
-          component: RoleIndexComponent,
+          component: RoleIndexView,
           meta: {
             requiresAuth: true
           }
@@ -39,7 +38,14 @@ const router = createRouter({
         {
           path: 'create',
           name: 'role.create',
-          component: RoleCreateComponent,
+          component: RoleCreateView,
+          meta: {
+            requiresAuth: true
+          }
+        }, {
+          path: ':id',
+          name: 'role.show',
+          component: RoleShowView,
           meta: {
             requiresAuth: true
           }

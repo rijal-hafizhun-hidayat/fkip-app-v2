@@ -19,7 +19,7 @@ const validation = ref([])
 
 const sendData = () => {
   axios
-    .post('api/login', {
+    .post('login', {
       username: form.username,
       password: form.password
     })
@@ -37,6 +37,7 @@ const sendData = () => {
       })
     })
     .catch((err) => {
+      console.log(err)
       if (err.response.status == 404) {
         validation.value = []
         emit('errMessageLabel', err.response.data.errors)
