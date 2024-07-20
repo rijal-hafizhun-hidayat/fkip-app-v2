@@ -1,8 +1,9 @@
 // import './assets/main.css'
 import "./style.css";
+import 'vue-multiselect/dist/vue-multiselect.css';
 import moment from "moment";
 import axios from 'axios'
-import Swal from 'sweetalert2/dist/sweetalert2.js'
+import Swal from 'sweetalert2'
 import 'sweetalert2/src/sweetalert2.scss'
 import {
     createApp

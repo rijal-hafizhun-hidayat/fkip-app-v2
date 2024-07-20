@@ -46,6 +46,12 @@ const sendData = () => {
       }
     })
 }
+
+const showRegisterForm = () => {
+  return router.push({
+    name: 'register'
+  })
+}
 </script>
 <template>
   <form @submit.prevent="sendData">
@@ -63,7 +69,13 @@ const sendData = () => {
       </div>
     </div>
 
-    <div class="flex items-center justify-end mt-4">
+    <div class="flex items-center justify-between mt-4">
+      <p class="text-sm">
+        Belum memiliki akun? klik
+        <span class="text-blue-500 underline cursor-pointer" @click="showRegisterForm()"
+          >register</span
+        >
+      </p>
       <PrimaryButton type="submit">Masuk</PrimaryButton>
     </div>
   </form>
