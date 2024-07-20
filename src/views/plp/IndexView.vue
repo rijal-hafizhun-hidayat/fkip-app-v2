@@ -6,62 +6,40 @@ import DangerButton from '../../components/DangerButton.vue'
 import WarningButton from '../../components/WarningButton.vue'
 import TextInput from '../../components/TextInput.vue'
 import PrimaryButton from '../../components/PrimaryButton.vue'
-import { useRouter } from 'vue-router'
 
-const router = useRouter()
-const roles = ref([])
+const plps = ref([])
 const moment = inject('moment')
 const swal = inject('swal')
 const search = reactive({
-  nameRole: null
+  namePlp: null
 })
 
 onMounted(() => {
-  getRole()
+  getPlp()
 })
 
-const getRole = () => {
-  axios
-    .get('role', {
-      headers: {
-        Authorization: `Bearer ${sessionStorage.getItem('token')}`
-      }
-    })
-    .then((res) => {
-      roles.value = res.data.data
-    })
-    .catch((err) => {
-      console.log(err)
-      // if (err.response.status == 401) {
-      //   sessionStorage.clear()
-      //   router.push({
-      //     name: 'login'
-      //   })
-      // }
-    })
+const searchPlp = () => {
+  console.log(search.namePlp)
 }
 
-const searchRole = () => {
+const getPlp = () => {
   axios
-    .get('role', {
-      params: {
-        search: search.nameRole
-      },
+    .get('plp', {
       headers: {
         Authorization: `Bearer ${sessionStorage.getItem('token')}`
       }
     })
     .then((res) => {
-      roles.value = res.data.data
+      plps.value = res.data.data
     })
     .catch((err) => {
       console.log(err)
     })
 }
 
-const destroyRoleById = (id) => {
+const destroyPlpById = (id) => {
   axios
-    .delete(`role/${id}`, {
+    .delete(`plp/${id}`, {
       headers: {
         Authorization: `Bearer ${sessionStorage.getItem('token')}`
       }
@@ -69,37 +47,27 @@ const destroyRoleById = (id) => {
     .then(() => {
       swal.fire({
         title: 'Success',
-        text: 'Hapus role berhasil',
+        text: 'Hapus Plp berhasil',
         icon: 'success',
         confirmButtonText: 'Ok'
       })
 
-      getRole()
+      getPlp()
     })
     .catch((err) => {
       console.log(err)
     })
 }
-
-const showById = (roleId) => {
-  return router.push({
-    name: 'role.show',
-    params: {
-      id: roleId
-    }
-  })
-}
 </script>
-
 <template>
   <AuthLayout>
     <template #header>
       <div class="flex justify-between">
-        <div><h2 class="font-semibold text-xl text-gray-800 leading-tight">Role</h2></div>
+        <div><h2 class="font-semibold text-xl text-gray-800 leading-tight">Plp</h2></div>
         <div>
           <router-link
             class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150"
-            :to="{ name: 'role.create' }"
+            :to="{ name: 'plp.create' }"
             >Tambah</router-link
           >
         </div>
@@ -108,14 +76,14 @@ const showById = (roleId) => {
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="bg-white mt-10 px-4 py-6 rounded shadow-md overflow-x-auto">
-        <form @submit.prevent="searchRole()">
+        <form @submit.prevent="searchPlp()">
           <div class="grid grid-cols-2 gap-4">
             <div>
               <TextInput
                 class="block w-full"
                 type="text"
-                v-model="search.nameRole"
-                placeholder="Cari Role"
+                v-model="search.namePlp"
+                placeholder="Cari Plp"
               ></TextInput>
             </div>
             <div>
@@ -138,24 +106,24 @@ const showById = (roleId) => {
               <th class="pb-4 pt-6 px-6">Aksi</th>
             </tr>
           </thead>
-          <tbody v-if="roles.length !== 0">
-            <tr v-for="(role, index) in roles" :key="role.id" class="hover:bg-gray-100">
+          <tbody v-if="plps.length !== 0">
+            <tr v-for="(plp, index) in plps" :key="plp.id" class="hover:bg-gray-100">
               <td class="border-t items-center px-6 py-4">
                 {{ index + 1 }}
               </td>
               <td class="border-t items-center px-6 py-4">
-                {{ role.name }}
+                {{ plp.name }}
               </td>
               <td class="border-t items-center px-6 py-4">
-                {{ moment(role.created_at).format('DD MMMM YYYY') }}
+                {{ moment(plp.created_at).format('DD MMMM YYYY') }}
               </td>
               <td class="border-t items-center px-6 py-4">
-                {{ moment(role.updated_at).format('DD MMMM YYYY') }}
+                {{ moment(plp.updated_at).format('DD MMMM YYYY') }}
               </td>
               <td class="border-t items-center px-6 py-4">
                 <div class="space-x-4">
-                  <WarningButton @click="showById(role.id)">Ubah</WarningButton>
-                  <DangerButton @click="destroyRoleById(role.id)">Hapus</DangerButton>
+                  <WarningButton>Ubah</WarningButton>
+                  <DangerButton @click="destroyPlpById(plp.id)">Hapus</DangerButton>
                 </div>
               </td>
             </tr>
