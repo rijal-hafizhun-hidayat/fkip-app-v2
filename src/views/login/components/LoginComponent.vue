@@ -32,7 +32,7 @@ const sendData = () => {
 
       sessionStorage.setItem('isLoggedIn', true)
 
-      router.push({
+      return router.push({
         name: 'dashboard.index'
       })
     })

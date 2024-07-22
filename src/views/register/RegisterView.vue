@@ -7,7 +7,11 @@ import Multiselect from 'vue-multiselect'
 import TextInput from '../../components/TextInput.vue'
 import { reactive, ref, onMounted } from 'vue'
 import axios from 'axios'
+import { userAuthStore } from '@/stores/auth'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
+const auth = userAuthStore()
 const roles = ref([])
 const validation = ref([])
 const form = reactive({
@@ -15,7 +19,7 @@ const form = reactive({
   username: null,
   email: null,
   password: null,
-  plp_id: ''
+  role_id: ''
 })
 
 onMounted(() => {
@@ -31,7 +35,30 @@ onMounted(() => {
 })
 
 const register = () => {
-  console.log(form)
+  axios
+    .post('register', {
+      name: form.name,
+      username: form.username,
+      email: form.email,
+      password: form.password,
+      role_id: form.role_id.id
+    })
+    .then((res) => {
+      auth.user.token = res.data.data.token
+      auth.user.name = res.data.data.name
+
+      sessionStorage.setItem('token', res.data.data.token)
+      sessionStorage.setItem('name', res.data.data.name)
+
+      sessionStorage.setItem('isLoggedIn', true)
+
+      return router.push({
+        name: 'dashboard.index'
+      })
+    })
+    .catch((err) => {
+      console.log(err)
+    })
 }
 
 const nameWithLang = ({ name }) => {
@@ -64,7 +91,7 @@ const nameWithLang = ({ name }) => {
       <div>
         <InputLabel>Role</InputLabel>
         <multiselect
-          v-model="form.plp_id"
+          v-model="form.role_id"
           :options="roles"
           :custom-label="nameWithLang"
           placeholder="Select one"
