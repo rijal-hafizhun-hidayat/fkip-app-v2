@@ -4,15 +4,27 @@ import InputLabel from '../../components/InputLabel.vue'
 import TextInput from '../../components/TextInput.vue'
 import InputError from '../../components/InputError.vue'
 import PrimaryButton from '../../components/PrimaryButton.vue'
+import Multiselect from 'vue-multiselect'
 import { reactive, inject, ref } from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
 
+const options = ref([
+  {
+    name: 'pegawai uad',
+    value: true
+  },
+  {
+    name: 'pengguna',
+    value: false
+  }
+])
 const validation = ref([])
 const router = useRouter()
 const swal = inject('swal')
 const role = reactive({
-  name: null
+  name: null,
+  guard: ''
 })
 
 const send = () => {
@@ -20,7 +32,8 @@ const send = () => {
     .post(
       'role',
       {
-        name: role.name
+        name: role.name,
+        guard: role.guard.value
       },
       {
         headers: {
@@ -46,6 +59,10 @@ const send = () => {
       }
     })
 }
+
+const nameWithLang = ({ name }) => {
+  return `${name}`
+}
 </script>
 
 <template>
@@ -64,6 +81,18 @@ const send = () => {
               <InputLabel>Nama Role</InputLabel>
               <TextInput class="mt-1 block w-full" type="text" v-model="role.name" autofocus />
               <InputError v-if="validation.name" :message="validation.name._errors[0]" />
+            </div>
+            <div>
+              <InputLabel>Hak Akses</InputLabel>
+              <multiselect
+                v-model="role.guard"
+                :options="options"
+                :custom-label="nameWithLang"
+                placeholder="Select one"
+                label="name"
+                track-by="name"
+              ></multiselect>
+              <InputError v-if="validation.guard" :message="validation.guard._errors[0]" />
             </div>
             <div>
               <PrimaryButton type="submit">Simpan</PrimaryButton>
