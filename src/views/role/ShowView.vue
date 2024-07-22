@@ -4,6 +4,7 @@ import InputLabel from '../../components/InputLabel.vue'
 import TextInput from '../../components/TextInput.vue'
 import PrimaryButton from '../../components/PrimaryButton.vue'
 import InputError from '../../components/InputError.vue'
+import Multiselect from 'vue-multiselect'
 import { reactive, onMounted, inject, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
@@ -13,8 +14,19 @@ const swal = inject('swal')
 const route = useRoute()
 const router = useRouter()
 const role = reactive({
-  name: null
+  name: null,
+  guard: ''
 })
+const options = ref([
+  {
+    name: 'pegawai uad',
+    value: true
+  },
+  {
+    name: 'pengguna',
+    value: false
+  }
+])
 
 onMounted(() => {
   getRoleById(route.params.id)
@@ -29,6 +41,7 @@ const getRoleById = (roleId) => {
     })
     .then((res) => {
       role.name = res.data.data.name
+      role.guard = res.data.data.guard
     })
     .catch((err) => {
       console.log(err)
@@ -40,7 +53,8 @@ const send = () => {
     .put(
       `role/${route.params.id}`,
       {
-        name: role.name
+        name: role.name,
+        guard: role.guard.value
       },
       {
         headers: {
@@ -66,6 +80,10 @@ const send = () => {
       }
     })
 }
+
+const nameWithLang = ({ name }) => {
+  return `${name}`
+}
 </script>
 
 <template>
@@ -84,6 +102,18 @@ const send = () => {
               <InputLabel>Nama Role</InputLabel>
               <TextInput class="mt-1 block w-full" type="text" v-model="role.name" autofocus />
               <InputError v-if="validation.name" :message="validation.name._errors[0]" />
+            </div>
+            <div>
+              <InputLabel>Hak Akses</InputLabel>
+              <multiselect
+                v-model="role.guard"
+                :options="options"
+                :custom-label="nameWithLang"
+                placeholder="Select one"
+                label="name"
+                track-by="name"
+              ></multiselect>
+              <InputError v-if="validation.guard" :message="validation.guard._errors[0]" />
             </div>
             <div>
               <PrimaryButton type="submit">Simpan</PrimaryButton>
