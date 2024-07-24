@@ -21,7 +21,18 @@ onMounted(() => {
 })
 
 const getSchoolYearById = () => {
-  console.log(route.params.id)
+  axios
+    .get(`school-year/${route.params.id}`, {
+      headers: {
+        Authorization: `Bearer ${sessionStorage.getItem('token')}`
+      }
+    })
+    .then((res) => {
+      schoolYear.name = res.data.data.name
+    })
+    .catch((err) => {
+      console.log(err)
+    })
 }
 
 const send = () => {

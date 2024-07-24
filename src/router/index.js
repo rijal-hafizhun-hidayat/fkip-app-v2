@@ -11,8 +11,10 @@ import RoleCreateView from '../views/role/CreateView.vue'
 import RoleShowView from '../views/role/ShowView.vue'
 import PlpIndexView from '../views/plp/IndexView.vue'
 import PlpCreateView from '../views/plp/CreateView.vue'
+import PlpShowView from '../views/plp/ShowView.vue'
 import SchoolYearIndexView from '../views/school-year/IndexView.vue'
 import SchoolYearCreateView from '../views/school-year/CreateView.vue'
+import SchoolYearShowView from '../views/school-year/ShowView.vue'
 
 const router = createRouter({
   history: createWebHistory(
@@ -79,6 +81,14 @@ const router = createRouter({
           meta: {
             requiresAuth: true
           }
+        },
+        {
+          path: ':id',
+          name: 'plp.show',
+          component: PlpShowView,
+          meta: {
+            requiresAuth: true
+          }
         }
       ]
     },
@@ -96,6 +106,14 @@ const router = createRouter({
           path: 'create',
           name: 'school-year.create',
           component: SchoolYearCreateView,
+          meta: {
+            requiresAuth: true
+          }
+        },
+        {
+          path: ':id',
+          name: 'school-year.show',
+          component: SchoolYearShowView,
           meta: {
             requiresAuth: true
           }
