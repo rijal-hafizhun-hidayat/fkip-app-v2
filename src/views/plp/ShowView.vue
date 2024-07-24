@@ -2,59 +2,67 @@
 import AuthLayout from '../../layouts/AuthLayout.vue'
 import InputLabel from '../../components/InputLabel.vue'
 import TextInput from '../../components/TextInput.vue'
-import PrimaryButton from '../../components/PrimaryButton.vue'
 import InputError from '../../components/InputError.vue'
+import PrimaryButton from '../../components/PrimaryButton.vue'
 import Multiselect from 'vue-multiselect'
-import { reactive, onMounted, inject, ref } from 'vue'
+import { onMounted, ref, reactive, inject } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
 
-const validation = ref([])
 const swal = inject('swal')
+const validation = ref([])
+const schoolYears = ref([])
 const route = useRoute()
 const router = useRouter()
-const role = reactive({
+const plp = reactive({
   name: null,
-  guard: ''
+  schoolYear: ''
 })
-const options = ref([
-  {
-    name: 'pegawai uad',
-    value: true
-  },
-  {
-    name: 'pengguna',
-    value: false
-  }
-])
 
 onMounted(() => {
-  getRoleById(route.params.id)
+  getPlpById()
+  getSchoolYears()
 })
 
-const getRoleById = (roleId) => {
+const getPlpById = () => {
   axios
-    .get(`role/${roleId}`, {
+    .get(`plp/${route.params.id}`, {
       headers: {
         Authorization: `Bearer ${sessionStorage.getItem('token')}`
       }
     })
     .then((res) => {
-      role.name = res.data.data.name
-      role.guard = setGuardObject(res.data.data.guard)
+      console.log(res)
+      plp.name = res.data.data.name
+      plp.schoolYear = res.data.data.school_years[0].school_year
     })
     .catch((err) => {
       console.log(err)
     })
 }
 
-const send = () => {
+const getSchoolYears = () => {
+  axios
+    .get('school-year', {
+      headers: {
+        Authorization: `Bearer ${sessionStorage.getItem('token')}`
+      }
+    })
+    .then((res) => {
+      schoolYears.value = res.data.data
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+}
+
+const updatePlpById = () => {
   axios
     .put(
-      `role/${route.params.id}`,
+      `plp/${route.params.id}`,
       {
-        name: role.name,
-        guard: role.guard.value
+        name: plp.name,
+        school_year_id: plp.schoolYear.id
       },
       {
         headers: {
@@ -65,69 +73,53 @@ const send = () => {
     .then(() => {
       swal.fire({
         title: 'Success',
-        text: 'Ubah role berhasil',
+        text: 'Ubah Plp berhasil',
         icon: 'success',
         confirmButtonText: 'Ok'
       })
 
       return router.push({
-        name: 'role.index'
+        name: 'plp.index'
       })
     })
     .catch((err) => {
-      if (err.response.status == 400) {
-        validation.value = err.response.data.errors
-      }
+      console.log(err)
     })
-}
-
-const setGuardObject = (isGuard) => {
-  if (isGuard === true) {
-    return {
-      name: 'pegawai uad',
-      value: true
-    }
-  } else {
-    return {
-      name: 'pengguna',
-      value: false
-    }
-  }
 }
 
 const nameWithLang = ({ name }) => {
   return `${name}`
 }
 </script>
-
 <template>
   <AuthLayout>
     <template #header>
       <div class="flex justify-between">
-        <div><h2 class="font-semibold text-xl text-gray-800 leading-tight">Ubah Role</h2></div>
+        <div>
+          <h2 class="font-semibold text-xl text-gray-800 leading-tight">Ubah Plp</h2>
+        </div>
       </div>
     </template>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="bg-white mt-10 px-4 py-6 rounded shadow-md overflow-x-auto">
         <div class="whitespace-nowrap">
-          <form @submit.prevent="send()" class="space-y-4">
+          <form @submit.prevent="updatePlpById()" class="space-y-4">
             <div>
-              <InputLabel>Nama Role</InputLabel>
-              <TextInput class="mt-1 block w-full" type="text" v-model="role.name" autofocus />
+              <InputLabel>Nama Plp</InputLabel>
+              <TextInput class="mt-1 block w-full" type="text" v-model="plp.name" autofocus />
               <InputError v-if="validation.name" :message="validation.name._errors[0]" />
             </div>
             <div>
-              <InputLabel>Hak Akses</InputLabel>
+              <InputLabel>Tahun ajaran</InputLabel>
               <multiselect
-                v-model="role.guard"
-                :options="options"
+                v-model="plp.schoolYear"
+                :options="schoolYears"
                 :custom-label="nameWithLang"
                 placeholder="Select one"
                 label="name"
                 track-by="name"
               ></multiselect>
-              <InputError v-if="validation.guard" :message="validation.guard._errors[0]" />
             </div>
             <div>
               <PrimaryButton type="submit">Simpan</PrimaryButton>
