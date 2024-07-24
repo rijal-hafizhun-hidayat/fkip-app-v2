@@ -5,9 +5,12 @@ import TextInput from '../../components/TextInput.vue'
 import InputError from '../../components/InputError.vue'
 import PrimaryButton from '../../components/PrimaryButton.vue'
 import Multiselect from 'vue-multiselect'
-import { reactive, ref, onMounted } from 'vue'
+import { reactive, ref, onMounted, inject } from 'vue'
+import { useRouter } from 'vue-router'
 import axios from 'axios'
 
+const swal = inject('swal')
+const router = useRouter()
 const validation = ref([])
 const schoolYears = ref([])
 const plp = reactive({
@@ -27,7 +30,7 @@ const getSchoolYear = () => {
       }
     })
     .then((res) => {
-      console.log(res)
+      schoolYears.value = res.data.data
     })
     .catch((err) => {
       console.log(err)
@@ -35,7 +38,34 @@ const getSchoolYear = () => {
 }
 
 const send = () => {
-  console.log(plp)
+  axios
+    .post(
+      'plp',
+      {
+        name: plp.name,
+        school_year_id: plp.school_year_id.id
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem('token')}`
+        }
+      }
+    )
+    .then(() => {
+      swal.fire({
+        title: 'Success',
+        text: 'Tambah Plp berhasil',
+        icon: 'success',
+        confirmButtonText: 'Ok'
+      })
+
+      return router.push({
+        name: 'plp.index'
+      })
+    })
+    .catch((err) => {
+      console.log(err)
+    })
 }
 
 const nameWithLang = ({ name }) => {
@@ -47,7 +77,7 @@ const nameWithLang = ({ name }) => {
     <template #header>
       <div class="flex justify-between">
         <div>
-          <h2 class="font-semibold text-xl text-gray-800 leading-tight">Tambah Role</h2>
+          <h2 class="font-semibold text-xl text-gray-800 leading-tight">Tambah Plp</h2>
         </div>
       </div>
     </template>

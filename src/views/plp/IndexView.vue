@@ -6,7 +6,9 @@ import DangerButton from '../../components/DangerButton.vue'
 import WarningButton from '../../components/WarningButton.vue'
 import TextInput from '../../components/TextInput.vue'
 import PrimaryButton from '../../components/PrimaryButton.vue'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const plps = ref([])
 const moment = inject('moment')
 const swal = inject('swal')
@@ -30,6 +32,7 @@ const getPlp = () => {
       }
     })
     .then((res) => {
+      console.log(res)
       plps.value = res.data.data
     })
     .catch((err) => {
@@ -57,6 +60,15 @@ const destroyPlpById = (id) => {
     .catch((err) => {
       console.log(err)
     })
+}
+
+const showPlpById = (plpId) => {
+  return router.push({
+    name: 'plp.show',
+    params: {
+      id: plpId
+    }
+  })
 }
 </script>
 <template>
@@ -101,6 +113,7 @@ const destroyPlpById = (id) => {
             <tr class="text-left font-bold">
               <th class="pb-4 pt-6 px-6">#</th>
               <th class="pb-4 pt-6 px-6">Nama</th>
+              <th class="pb-4 pt-6 px-6">Tahun Ajaran</th>
               <th class="pb-4 pt-6 px-6">Dibuat</th>
               <th class="pb-4 pt-6 px-6">Diubah</th>
               <th class="pb-4 pt-6 px-6">Aksi</th>
@@ -114,6 +127,13 @@ const destroyPlpById = (id) => {
               <td class="border-t items-center px-6 py-4">
                 {{ plp.name }}
               </td>
+              <td
+                v-for="schoolYear in plp.school_years"
+                :key="schoolYear.id"
+                class="border-t items-center px-6 py-4"
+              >
+                {{ schoolYear.school_year.name }}
+              </td>
               <td class="border-t items-center px-6 py-4">
                 {{ moment(plp.created_at).format('DD MMMM YYYY') }}
               </td>
@@ -122,7 +142,7 @@ const destroyPlpById = (id) => {
               </td>
               <td class="border-t items-center px-6 py-4">
                 <div class="space-x-4">
-                  <WarningButton>Ubah</WarningButton>
+                  <WarningButton @click="showPlpById(plp.id)">Ubah</WarningButton>
                   <DangerButton @click="destroyPlpById(plp.id)">Hapus</DangerButton>
                 </div>
               </td>

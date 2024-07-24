@@ -28,16 +28,11 @@ const getRole = () => {
       }
     })
     .then((res) => {
+      console.log(res)
       roles.value = res.data.data
     })
     .catch((err) => {
       console.log(err)
-      // if (err.response.status == 401) {
-      //   sessionStorage.clear()
-      //   router.push({
-      //     name: 'login'
-      //   })
-      // }
     })
 }
 
@@ -135,6 +130,7 @@ const showById = (roleId) => {
               <th class="pb-4 pt-6 px-6">Nama</th>
               <th class="pb-4 pt-6 px-6">Dibuat</th>
               <th class="pb-4 pt-6 px-6">Diubah</th>
+              <th class="pb-4 pt-6 px-6">Hak Akses</th>
               <th class="pb-4 pt-6 px-6">Aksi</th>
             </tr>
           </thead>
@@ -146,6 +142,10 @@ const showById = (roleId) => {
               <td class="border-t items-center px-6 py-4">
                 {{ role.name }}
               </td>
+              <td v-if="role.guard === true" class="border-t items-center px-6 py-4">
+                pegawai uad
+              </td>
+              <td v-else class="border-t items-center px-6 py-4">pengguna</td>
               <td class="border-t items-center px-6 py-4">
                 {{ moment(role.created_at).format('DD MMMM YYYY') }}
               </td>

@@ -6,7 +6,9 @@ import DangerButton from '../../components/DangerButton.vue'
 import WarningButton from '../../components/WarningButton.vue'
 import PrimaryButton from '../../components/PrimaryButton.vue'
 import TextInput from '../../components/TextInput.vue'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const schoolYears = ref([])
 const moment = inject('moment')
 const swal = inject('swal')
@@ -56,6 +58,16 @@ const destroySchoolYearById = (id) => {
 }
 
 const searchSchoolYear = () => {}
+
+const showSchoolYearById = (schoolYearId) => {
+  console.log(schoolYearId)
+  return router.push({
+    name: 'school-year.show',
+    params: {
+      id: schoolYearId
+    }
+  })
+}
 </script>
 <template>
   <AuthLayout>
@@ -124,7 +136,7 @@ const searchSchoolYear = () => {}
               </td>
               <td class="border-t items-center px-6 py-4">
                 <div class="space-x-4">
-                  <WarningButton>Ubah</WarningButton>
+                  <WarningButton @click="showSchoolYearById(schoolYear.id)">Ubah</WarningButton>
                   <DangerButton @click="destroySchoolYearById(schoolYear.id)">Hapus</DangerButton>
                 </div>
               </td>
