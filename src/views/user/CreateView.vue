@@ -5,45 +5,48 @@ import TextInput from '../../components/TextInput.vue'
 import InputError from '../../components/InputError.vue'
 import PrimaryButton from '../../components/PrimaryButton.vue'
 import Multiselect from 'vue-multiselect'
-import { reactive, ref, onMounted, inject } from 'vue'
-import { useRouter } from 'vue-router'
+import { onMounted, ref, reactive, inject } from 'vue'
 import axios from 'axios'
+import { useRouter } from 'vue-router'
 
-const swal = inject('swal')
 const router = useRouter()
 const validation = ref([])
-const schoolYears = ref([])
-const plp = reactive({
+const swal = inject('swal')
+const roles = ref([])
+const user = reactive({
   name: null,
-  school_year_id: ''
+  username: null,
+  email: null,
+  password: null,
+  role: ''
 })
 
 onMounted(() => {
-  getSchoolYear()
-})
-
-const getSchoolYear = () => {
   axios
-    .get('school-year', {
+    .get('role', {
       headers: {
         Authorization: `Bearer ${sessionStorage.getItem('token')}`
       }
     })
     .then((res) => {
-      schoolYears.value = res.data.data
+      console.log(res)
+      roles.value = res.data.data
     })
     .catch((err) => {
       console.log(err)
     })
-}
+})
 
 const send = () => {
   axios
     .post(
-      'plp',
+      'register',
       {
-        name: plp.name,
-        school_year_id: plp.school_year_id.id
+        name: user.name,
+        username: user.username,
+        email: user.email,
+        password: user.password,
+        role_id: user.role.id
       },
       {
         headers: {
@@ -54,13 +57,13 @@ const send = () => {
     .then(() => {
       swal.fire({
         title: 'Success',
-        text: 'Tambah Plp berhasil',
+        text: 'Tambah pengguna berhasil',
         icon: 'success',
         confirmButtonText: 'Ok'
       })
 
       return router.push({
-        name: 'plp.index'
+        name: 'user.index'
       })
     })
     .catch((err) => {
@@ -79,7 +82,7 @@ const nameWithLang = ({ name }) => {
     <template #header>
       <div class="flex justify-between">
         <div>
-          <h2 class="font-semibold text-xl text-gray-800 leading-tight">Tambah Plp</h2>
+          <h2 class="font-semibold text-xl text-gray-800 leading-tight">Tambah Pengguna</h2>
         </div>
       </div>
     </template>
@@ -89,20 +92,41 @@ const nameWithLang = ({ name }) => {
         <div class="whitespace-nowrap">
           <form @submit.prevent="send()" class="space-y-4">
             <div>
-              <InputLabel>Nama Plp</InputLabel>
-              <TextInput class="mt-1 block w-full" type="text" v-model="plp.name" autofocus />
+              <InputLabel>Nama</InputLabel>
+              <TextInput class="mt-1 block w-full" type="text" v-model="user.name" autofocus />
               <InputError v-if="validation.name" :message="validation.name._errors[0]" />
             </div>
             <div>
-              <InputLabel>Tahun ajaran</InputLabel>
+              <InputLabel>Username</InputLabel>
+              <TextInput class="mt-1 block w-full" type="text" v-model="user.username" autofocus />
+              <InputError v-if="validation.username" :message="validation.username._errors[0]" />
+            </div>
+            <div>
+              <InputLabel>Email</InputLabel>
+              <TextInput class="mt-1 block w-full" type="text" v-model="user.email" autofocus />
+              <InputError v-if="validation.email" :message="validation.email._errors[0]" />
+            </div>
+            <div>
+              <InputLabel>Password</InputLabel>
+              <TextInput
+                class="mt-1 block w-full"
+                type="password"
+                v-model="user.password"
+                autofocus
+              />
+              <InputError v-if="validation.password" :message="validation.password._errors[0]" />
+            </div>
+            <div>
+              <InputLabel>Hak Akses</InputLabel>
               <multiselect
-                v-model="plp.school_year_id"
-                :options="schoolYears"
+                v-model="user.role"
+                :options="roles"
                 :custom-label="nameWithLang"
                 placeholder="Select one"
                 label="name"
                 track-by="name"
               ></multiselect>
+              <InputError v-if="validation.role_id" :message="validation.role_id._errors[0]" />
             </div>
             <div>
               <PrimaryButton type="submit">Simpan</PrimaryButton>
