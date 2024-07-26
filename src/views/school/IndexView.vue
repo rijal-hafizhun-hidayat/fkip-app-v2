@@ -1,43 +1,48 @@
 <script setup>
 import AuthLayout from '../../layouts/AuthLayout.vue'
-import { onMounted, ref, inject, reactive } from 'vue'
-import axios from 'axios'
 import DangerButton from '../../components/DangerButton.vue'
 import WarningButton from '../../components/WarningButton.vue'
 import PrimaryButton from '../../components/PrimaryButton.vue'
 import TextInput from '../../components/TextInput.vue'
+import { onMounted, ref, inject, reactive } from 'vue'
+import axios from 'axios'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
-const schoolYears = ref([])
+const schools = ref([])
 const moment = inject('moment')
 const swal = inject('swal')
 const search = reactive({
-  nameSchoolYear: null
+  nameSchool: null
 })
 
 onMounted(() => {
-  getSchoolYear()
+  getSchools()
 })
 
-const getSchoolYear = () => {
+const getSchools = () => {
   axios
-    .get('school-year', {
+    .get('school', {
       headers: {
         Authorization: `Bearer ${sessionStorage.getItem('token')}`
       }
     })
     .then((res) => {
-      schoolYears.value = res.data.data
+      console.log(res)
+      schools.value = res.data.data
     })
     .catch((err) => {
       console.log(err)
     })
 }
 
-const destroySchoolYearById = (id) => {
+const searchSchool = () => {
+  console.log(search)
+}
+
+const destroySchoolById = (schoolId) => {
   axios
-    .delete(`school-year/${id}`, {
+    .delete(`school/${schoolId}`, {
       headers: {
         Authorization: `Bearer ${sessionStorage.getItem('token')}`
       }
@@ -45,42 +50,23 @@ const destroySchoolYearById = (id) => {
     .then(() => {
       swal.fire({
         title: 'Success',
-        text: 'Tambah tahun ajaran berhasil',
+        text: 'Hapus sekolah berhasil',
         icon: 'success',
         confirmButtonText: 'Ok'
       })
 
-      getSchoolYear()
+      getSchools()
     })
     .catch((err) => {
       console.log(err)
     })
 }
 
-const searchSchoolYear = () => {
-  axios
-    .get('school-year', {
-      headers: {
-        Authorization: `Bearer ${sessionStorage.getItem('token')}`
-      },
-      params: {
-        search: search.nameSchoolYear
-      }
-    })
-    .then((res) => {
-      schoolYears.value = res.data.data
-    })
-    .catch((err) => {
-      console.log(err)
-    })
-}
-
-const showSchoolYearById = (schoolYearId) => {
-  console.log(schoolYearId)
+const showSchoolById = (schoolId) => {
   return router.push({
-    name: 'school-year.show',
+    name: 'school.show',
     params: {
-      id: schoolYearId
+      id: schoolId
     }
   })
 }
@@ -89,11 +75,11 @@ const showSchoolYearById = (schoolYearId) => {
   <AuthLayout>
     <template #header>
       <div class="flex justify-between">
-        <div><h2 class="font-semibold text-xl text-gray-800 leading-tight">Tahun Ajaran</h2></div>
+        <div><h2 class="font-semibold text-xl text-gray-800 leading-tight">Sekolah</h2></div>
         <div>
           <router-link
             class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150"
-            :to="{ name: 'school-year.create' }"
+            :to="{ name: 'school.create' }"
             >Tambah</router-link
           >
         </div>
@@ -102,14 +88,14 @@ const showSchoolYearById = (schoolYearId) => {
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="bg-white mt-10 px-4 py-6 rounded shadow-md overflow-x-auto">
-        <form @submit.prevent="searchSchoolYear()">
+        <form @submit.prevent="searchSchool()">
           <div class="grid grid-cols-2 gap-4">
             <div>
               <TextInput
                 class="block w-full"
                 type="text"
-                v-model="search.nameSchoolYear"
-                placeholder="Cari Tahun Ajaran"
+                v-model="search.nameSchool"
+                placeholder="Cari Role"
               ></TextInput>
             </div>
             <div>
@@ -127,33 +113,43 @@ const showSchoolYearById = (schoolYearId) => {
             <tr class="text-left font-bold">
               <th class="pb-4 pt-6 px-6">#</th>
               <th class="pb-4 pt-6 px-6">Nama</th>
+              <th class="pb-4 pt-6 px-6">Plp</th>
               <th class="pb-4 pt-6 px-6">Dibuat</th>
               <th class="pb-4 pt-6 px-6">Diubah</th>
               <th class="pb-4 pt-6 px-6">Aksi</th>
             </tr>
           </thead>
-          <tbody v-if="schoolYears.length !== 0">
-            <tr
-              v-for="(schoolYear, index) in schoolYears"
-              :key="schoolYear.id"
-              class="hover:bg-gray-100"
-            >
+          <tbody v-if="schools.length !== 0">
+            <tr v-for="(school, index) in schools" :key="school.id" class="hover:bg-gray-100">
               <td class="border-t items-center px-6 py-4">
                 {{ index + 1 }}
               </td>
               <td class="border-t items-center px-6 py-4">
-                {{ schoolYear.name }}
+                {{ school.name }}
+              </td>
+              <div v-if="school.schools.length > 0">
+                <td
+                  v-for="schoolPlp in school.schools"
+                  :key="schoolPlp.plp.id"
+                  class="border-t items-center px-6 py-4"
+                >
+                  {{ schoolPlp.plp.name }}
+                </td>
+              </div>
+
+              <div v-else>
+                <td class="border-t items-center px-6 py-4">-</td>
+              </div>
+              <td class="border-t items-center px-6 py-4">
+                {{ moment(school.created_at).format('DD MMMM YYYY') }}
               </td>
               <td class="border-t items-center px-6 py-4">
-                {{ moment(schoolYear.created_at).format('DD MMMM YYYY') }}
-              </td>
-              <td class="border-t items-center px-6 py-4">
-                {{ moment(schoolYear.updated_at).format('DD MMMM YYYY') }}
+                {{ moment(school.updated_at).format('DD MMMM YYYY') }}
               </td>
               <td class="border-t items-center px-6 py-4">
                 <div class="space-x-4">
-                  <WarningButton @click="showSchoolYearById(schoolYear.id)">Ubah</WarningButton>
-                  <DangerButton @click="destroySchoolYearById(schoolYear.id)">Hapus</DangerButton>
+                  <WarningButton @click="showSchoolById(school.id)">Ubah</WarningButton>
+                  <DangerButton @click="destroySchoolById(school.id)">Hapus</DangerButton>
                 </div>
               </td>
             </tr>
