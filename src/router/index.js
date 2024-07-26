@@ -15,6 +15,9 @@ import PlpShowView from '../views/plp/ShowView.vue'
 import SchoolYearIndexView from '../views/school-year/IndexView.vue'
 import SchoolYearCreateView from '../views/school-year/CreateView.vue'
 import SchoolYearShowView from '../views/school-year/ShowView.vue'
+import SchoolIndexView from '../views/school/IndexView.vue'
+import SchoolCreateView from '../views/school/CreateView.vue'
+import SchoolShowView from '../views/school/ShowView.vue'
 
 const router = createRouter({
   history: createWebHistory(
@@ -119,6 +122,31 @@ const router = createRouter({
           }
         }
       ]
+    },
+    {
+      path: '/school',
+      children: [{
+        path: '',
+        name: 'school.index',
+        component: SchoolIndexView,
+        meta: {
+          requiresAuth: true
+        }
+      }, {
+        path: 'create',
+        name: 'school.create',
+        component: SchoolCreateView,
+        meta: {
+          requiresAuth: true
+        }
+      }, {
+        path: ':id',
+        name: 'school.show',
+        component: SchoolShowView,
+        meta: {
+          requiresAuth: true
+        }
+      }]
     },
     {
       path: '/about',
