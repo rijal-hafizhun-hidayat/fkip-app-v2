@@ -18,6 +18,9 @@ import SchoolYearShowView from '../views/school-year/ShowView.vue'
 import SchoolIndexView from '../views/school/IndexView.vue'
 import SchoolCreateView from '../views/school/CreateView.vue'
 import SchoolShowView from '../views/school/ShowView.vue'
+import UserIndexView from '../views/user/IndexView.vue'
+import UserCreateView from '../views/user/CreateView.vue'
+import UserShowView from '../views/user/ShowView.vue'
 
 const router = createRouter({
   history: createWebHistory(
@@ -143,6 +146,31 @@ const router = createRouter({
         path: ':id',
         name: 'school.show',
         component: SchoolShowView,
+        meta: {
+          requiresAuth: true
+        }
+      }]
+    },
+    {
+      path: '/user',
+      children: [{
+        path: '',
+        name: 'user.index',
+        component: UserIndexView,
+        meta: {
+          requiresAuth: true
+        }
+      }, {
+        path: 'create',
+        name: 'user.create',
+        component: UserCreateView,
+        meta: {
+          requiresAuth: true
+        }
+      }, {
+        path: ':id',
+        name: 'user.show',
+        component: UserShowView,
         meta: {
           requiresAuth: true
         }
