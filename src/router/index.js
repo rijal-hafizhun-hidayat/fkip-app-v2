@@ -21,6 +21,9 @@ import SchoolShowView from '../views/school/ShowView.vue'
 import UserIndexView from '../views/user/IndexView.vue'
 import UserCreateView from '../views/user/CreateView.vue'
 import UserShowView from '../views/user/ShowView.vue'
+import UserDetailView from '../views/user/DetailView.vue'
+import UserAccommodateTutorTeacherCreateView from '../views/user/accommodate/tutor-teacher/CreateView.vue'
+import UserAccommodateDplCreateView from '../views/user/accommodate/dpl/CreateView.vue'
 
 const router = createRouter({
   history: createWebHistory(
@@ -169,11 +172,38 @@ const router = createRouter({
         }
       }, {
         path: ':id',
-        name: 'user.show',
-        component: UserShowView,
-        meta: {
-          requiresAuth: true
-        }
+        children: [{
+          path: '',
+          name: 'user.show',
+          component: UserShowView,
+          meta: {
+            requiresAuth: true
+          }
+        }, {
+          path: 'detail',
+          children: [{
+            path: '',
+            name: 'user.detail',
+            component: UserDetailView,
+            meta: {
+              requiresAuth: true
+            }
+          }, {
+            path: 'create-accommodate-tutor-teacher',
+            name: 'user.detail.create-accommodate-tutor-teacher',
+            component: UserAccommodateTutorTeacherCreateView,
+            meta: {
+              requiresAuth: true
+            }
+          }, {
+            path: 'create-accommodate-dpl',
+            name: 'user.detail.create-accommodate-dpl',
+            component: UserAccommodateDplCreateView,
+            meta: {
+              requiresAuth: true
+            }
+          }]
+        }]
       }]
     },
     {
