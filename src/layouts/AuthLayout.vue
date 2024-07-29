@@ -17,6 +17,12 @@ const logout = () => {
     name: 'login'
   })
 }
+
+const myProfile = () => {
+  return router.push({
+    name: 'profile.index'
+  })
+}
 </script>
 <template>
   <div>
@@ -112,9 +118,12 @@ const logout = () => {
                     </span>
                   </template>
                   <template #content>
-                    <!-- <DropdownLink :href="route('logout')" method="post" as="button">
-                      Log Out
-                    </DropdownLink> -->
+                    <a
+                      @click="myProfile()"
+                      class="cursor-pointer block w-full px-4 py-2 text-left text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition duration-150 ease-in-out"
+                    >
+                      Profile
+                    </a>
                     <a
                       @click="logout()"
                       class="cursor-pointer block w-full px-4 py-2 text-left text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition duration-150 ease-in-out"
