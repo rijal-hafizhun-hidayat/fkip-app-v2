@@ -1,43 +1,46 @@
 <script setup>
 import AuthLayout from '@/layouts/AuthLayout.vue'
-import PrimaryButton from '@/components/PrimaryButton.vue'
 import InputLabel from '@/components/InputLabel.vue'
+import InputError from '@/components/InputError.vue'
+import PrimaryButton from '@/components/PrimaryButton.vue'
 import Multiselect from 'vue-multiselect'
-import { onMounted, reactive, ref } from 'vue'
+import { ref, reactive, onMounted, inject } from 'vue'
 import axios from 'axios'
-import { useRoute } from 'vue-router'
+import { useRouter } from 'vue-router'
 
-const route = useRoute()
-const users = ref([])
-const role = ref(4) //role guru pamong
-
-const accommodate = reactive({
-  user: ''
+const router = useRouter()
+const swal = inject('swal')
+const plps = ref([])
+const validation = ref([])
+const user = reactive({
+  plp: ''
 })
 
 onMounted(() => {
   axios
-    .get(`users/${role.value}/role`, {
+    .get('plp', {
       headers: {
         Authorization: `Bearer ${sessionStorage.getItem('token')}`
       }
     })
     .then((res) => {
       console.log(res)
-      users.value = res.data.data
+      plps.value = res.data.data
     })
     .catch((err) => {
       console.log(err)
+      if (err.response.status == 400) {
+        validation.value = err.response.data.errors
+      }
     })
 })
 
 const send = () => {
   axios
-    .put(
-      `accommodate`,
+    .post(
+      'me/type-plp',
       {
-        user_id_colleger: route.params.id,
-        user_id_tutor_teacher: accommodate.user.id
+        plp_id: user.plp.id
       },
       {
         headers: {
@@ -47,6 +50,16 @@ const send = () => {
     )
     .then((res) => {
       console.log(res)
+      swal.fire({
+        title: 'Success',
+        text: 'Tambah jenis PLP berhasil',
+        icon: 'success',
+        confirmButtonText: 'Ok'
+      })
+
+      return router.push({
+        name: 'profile.index'
+      })
     })
     .catch((err) => {
       console.log(err)
@@ -62,7 +75,7 @@ const nameWithLang = ({ name }) => {
     <template #header>
       <div class="flex justify-between">
         <div>
-          <h2 class="font-semibold text-xl text-gray-800 leading-tight">Tambah Guru Pamong</h2>
+          <h2 class="font-semibold text-xl text-gray-800 leading-tight">Tambah Jenis PLP</h2>
         </div>
       </div>
     </template>
@@ -72,15 +85,16 @@ const nameWithLang = ({ name }) => {
         <div class="whitespace-nowrap">
           <form @submit.prevent="send()" class="space-y-4">
             <div>
-              <InputLabel>Guru Pamong</InputLabel>
+              <InputLabel>Jenis PLP</InputLabel>
               <multiselect
-                v-model="accommodate.user"
-                :options="users"
+                v-model="user.plp"
+                :options="plps"
                 :custom-label="nameWithLang"
                 placeholder="Select one"
                 label="name"
                 track-by="name"
               ></multiselect>
+              <InputError v-if="validation.guard" :message="validation.guard._errors[0]" />
             </div>
             <div>
               <PrimaryButton type="submit">Simpan</PrimaryButton>

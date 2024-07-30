@@ -25,6 +25,7 @@ import UserDetailView from '../views/user/DetailView.vue'
 import UserAccommodateTutorTeacherCreateView from '../views/user/accommodate/tutor-teacher/CreateView.vue'
 import UserAccommodateDplCreateView from '../views/user/accommodate/dpl/CreateView.vue'
 import ProfileIndexView from '../views/profile/IndexView.vue'
+import ProfileCreateTypePlp from '../views/profile/CreateTypePlp.vue'
 
 const router = createRouter({
   history: createWebHistory(
@@ -209,11 +210,21 @@ const router = createRouter({
     },
     {
       path: '/profile',
-      name: 'profile.index',
-      component: ProfileIndexView,
-      meta: {
-        requiresAuth: true
-      }
+      children: [{
+        path: '',
+        name: 'profile.index',
+        component: ProfileIndexView,
+        meta: {
+          requiresAuth: true
+        }
+      }, {
+        path: 'create-type-plp',
+        name: 'profile.create-type-plp',
+        component: ProfileCreateTypePlp,
+        meta: {
+          requiresAuth: true
+        }
+      }]
     },
     {
       path: '/about',
