@@ -38,7 +38,7 @@ onMounted(() => {
 const send = () => {
   axios
     .post(
-      'me/type-plp',
+      'me/user-plp',
       {
         plp_id: user.plp.id
       },
@@ -52,7 +52,7 @@ const send = () => {
       console.log(res)
       swal.fire({
         title: 'Success',
-        text: 'Tambah jenis PLP berhasil',
+        text: 'Tambah Pengguna PLP berhasil',
         icon: 'success',
         confirmButtonText: 'Ok'
       })
@@ -63,6 +63,9 @@ const send = () => {
     })
     .catch((err) => {
       console.log(err)
+      if (err.response.status == 400) {
+        validation.value = err.response.data.errors
+      }
     })
 }
 
@@ -94,7 +97,7 @@ const nameWithLang = ({ name }) => {
                 label="name"
                 track-by="name"
               ></multiselect>
-              <InputError v-if="validation.guard" :message="validation.guard._errors[0]" />
+              <InputError v-if="validation.plp_id" :message="validation.plp_id._errors[0]" />
             </div>
             <div>
               <PrimaryButton type="submit">Simpan</PrimaryButton>

@@ -1,6 +1,6 @@
 <script setup>
 import AuthLayout from '@/layouts/AuthLayout.vue'
-import TypePlpComponent from './components/TypePlpComponent.vue'
+import UserPlpComponent from './components/UserPlpComponent.vue'
 import UpdatePasswordComponent from './components/UpdatePasswordComponent.vue'
 import UpdateProfileComponent from './components/UpdateProfileComponent.vue'
 </script>
@@ -14,6 +14,6 @@ import UpdateProfileComponent from './components/UpdateProfileComponent.vue'
 
     <UpdateProfileComponent />
     <UpdatePasswordComponent />
-    <TypePlpComponent />
+    <UserPlpComponent />
   </AuthLayout>
 </template>

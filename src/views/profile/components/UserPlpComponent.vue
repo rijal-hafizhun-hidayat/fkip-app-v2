@@ -8,11 +8,16 @@ import axios from 'axios'
 
 const router = useRouter()
 const moment = inject('moment')
+const swal = inject('swal')
 const userPlps = ref([])
 
 onMounted(() => {
+  getUserPlps()
+})
+
+const getUserPlps = () => {
   axios
-    .get('me/type-plp', {
+    .get('me/user-plp', {
       headers: {
         Authorization: `Bearer ${sessionStorage.getItem('token')}`
       }
@@ -24,20 +29,44 @@ onMounted(() => {
     .catch((err) => {
       console.log(err)
     })
-})
+}
 
 const createTypePlpProfile = () => {
   return router.push({
-    name: 'profile.create-type-plp'
+    name: 'profile.create-user-plp'
   })
 }
 
 const showUserPlpById = (userPlpId) => {
-  console.log(userPlpId)
+  return router.push({
+    name: 'profile.show-user-plp',
+    params: {
+      id: userPlpId
+    }
+  })
 }
 
 const destroyUserPlpById = (userPlpId) => {
-  console.log(userPlpId)
+  axios
+    .delete(`/me/user-plp/${userPlpId}`, {
+      headers: {
+        Authorization: `Bearer ${sessionStorage.getItem('token')}`
+      }
+    })
+    .then((res) => {
+      console.log(res)
+      swal.fire({
+        title: 'Success',
+        text: 'Hapus Pengguna PLP berhasil',
+        icon: 'success',
+        confirmButtonText: 'Ok'
+      })
+
+      getUserPlps()
+    })
+    .catch((err) => {
+      console.log(err)
+    })
 }
 </script>
 <template>
