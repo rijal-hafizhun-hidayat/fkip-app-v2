@@ -1,52 +1,53 @@
 <script setup>
 import AuthLayout from '@/layouts/AuthLayout.vue'
-import PrimaryButton from '@/components/PrimaryButton.vue'
 import InputLabel from '@/components/InputLabel.vue'
+import InputError from '@/components/InputError.vue'
+import PrimaryButton from '@/components/PrimaryButton.vue'
 import Multiselect from 'vue-multiselect'
-import { onMounted, reactive, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { onMounted, reactive, ref, inject } from 'vue'
 import axios from 'axios'
-import { useRoute } from 'vue-router'
 
+const router = useRouter()
 const route = useRoute()
-const users = ref([])
-const role = ref(4) //role guru pamong
-
-const accommodate = reactive({
-  user: ''
+const swal = inject('swal')
+const validation = ref([])
+const plps = ref([])
+const user = reactive({
+  plp: ''
 })
 
 onMounted(() => {
+  getPlps()
+  getUserPlpById()
+})
+
+const getPlps = () => {
   axios
-    .get(`users/${role.value}/role`, {
+    .get('plp', {
       headers: {
         Authorization: `Bearer ${sessionStorage.getItem('token')}`
       }
     })
     .then((res) => {
       console.log(res)
-      users.value = res.data.data
+      plps.value = res.data.data
     })
     .catch((err) => {
       console.log(err)
     })
-})
+}
 
-const send = () => {
+const getUserPlpById = () => {
   axios
-    .put(
-      `accommodate`,
-      {
-        user_id_colleger: route.params.id,
-        user_id_tutor_teacher: accommodate.user.id
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${sessionStorage.getItem('token')}`
-        }
+    .get(`me/user-plp/${route.params.id}`, {
+      headers: {
+        Authorization: `Bearer ${sessionStorage.getItem('token')}`
       }
-    )
+    })
     .then((res) => {
       console.log(res)
+      user.plp = res.data.data.plp
     })
     .catch((err) => {
       console.log(err)
@@ -56,13 +57,45 @@ const send = () => {
 const nameWithLang = ({ name }) => {
   return `${name}`
 }
+
+const send = () => {
+  console.log(user, route.params.id)
+  axios
+    .put(
+      `me/user-plp/${route.params.id}`,
+      {
+        plp_id: user.plp.id
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem('token')}`
+        }
+      }
+    )
+    .then((res) => {
+      console.log(res)
+      swal.fire({
+        title: 'Success',
+        text: 'Ubah Pengguna PLP berhasil',
+        icon: 'success',
+        confirmButtonText: 'Ok'
+      })
+
+      return router.push({
+        name: 'profile.index'
+      })
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+}
 </script>
 <template>
   <AuthLayout>
     <template #header>
       <div class="flex justify-between">
         <div>
-          <h2 class="font-semibold text-xl text-gray-800 leading-tight">Tambah Guru Pamong</h2>
+          <h2 class="font-semibold text-xl text-gray-800 leading-tight">Ubah Jenis PLP</h2>
         </div>
       </div>
     </template>
@@ -72,15 +105,16 @@ const nameWithLang = ({ name }) => {
         <div class="whitespace-nowrap">
           <form @submit.prevent="send()" class="space-y-4">
             <div>
-              <InputLabel>Guru Pamong</InputLabel>
+              <InputLabel>Jenis PLP</InputLabel>
               <multiselect
-                v-model="accommodate.user"
-                :options="users"
+                v-model="user.plp"
+                :options="plps"
                 :custom-label="nameWithLang"
                 placeholder="Select one"
                 label="name"
                 track-by="name"
               ></multiselect>
+              <InputError v-if="validation.plp_id" :message="validation.plp_id._errors[0]" />
             </div>
             <div>
               <PrimaryButton type="submit">Simpan</PrimaryButton>
