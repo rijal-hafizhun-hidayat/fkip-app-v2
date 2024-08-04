@@ -149,7 +149,7 @@ const nameWithLang = ({ name }) => {
                 class="block w-full"
                 type="text"
                 v-model="search.query"
-                placeholder="Cari pengguna berdasarkan nama dan email"
+                placeholder="Cari berdasarkan nama atau email"
               ></TextInput>
             </div>
             <div>

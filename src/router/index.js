@@ -23,6 +23,7 @@ import UserCreateView from '../views/user/CreateView.vue'
 import UserShowView from '../views/user/ShowView.vue'
 import UserDetailView from '../views/user/DetailView.vue'
 import UserAccommodateTutorTeacherCreateView from '../views/user/accommodate/tutor-teacher/CreateView.vue'
+import UserAccommodateTutorTeacherShowView from '../views/user/accommodate/tutor-teacher/ShowView.vue'
 import UserAccommodateDplCreateView from '../views/user/accommodate/dpl/CreateView.vue'
 import ProfileIndexView from '../views/profile/IndexView.vue'
 import ProfileUserPlpCreateView from '../views/profile/CreateUserPlp.vue'
@@ -192,12 +193,22 @@ const router = createRouter({
               requiresAuth: true
             }
           }, {
-            path: 'create-accommodate-tutor-teacher',
-            name: 'user.detail.create-accommodate-tutor-teacher',
-            component: UserAccommodateTutorTeacherCreateView,
-            meta: {
-              requiresAuth: true
-            }
+            path: 'accommodate-tutor-teacher',
+            children: [{
+              path: 'create',
+              name: 'user.detail.accommodate-tutor-teacher.create',
+              component: UserAccommodateTutorTeacherCreateView,
+              meta: {
+                requiresAuth: true
+              }
+            }, {
+              path: ':accommodateId',
+              name: 'user.detail.accommodate-tutor-teacher.show',
+              component: UserAccommodateTutorTeacherShowView,
+              meta: {
+                requiresAuth: true
+              }
+            }]
           }, {
             path: 'create-accommodate-dpl',
             name: 'user.detail.create-accommodate-dpl',

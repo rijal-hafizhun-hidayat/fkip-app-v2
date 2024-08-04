@@ -109,7 +109,7 @@ const showSchoolYearById = (schoolYearId) => {
                 class="block w-full"
                 type="text"
                 v-model="search.nameSchoolYear"
-                placeholder="Cari Tahun Ajaran"
+                placeholder="Cari berdasarkan tahun ajaran"
               ></TextInput>
             </div>
             <div>

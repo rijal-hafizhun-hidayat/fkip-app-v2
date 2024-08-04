@@ -7,8 +7,8 @@ import { onMounted, reactive, ref, inject } from 'vue'
 import axios from 'axios'
 import { useRoute, useRouter } from 'vue-router'
 
-const swal = inject('swal')
 const router = useRouter()
+const swal = inject('swal')
 const route = useRoute()
 const users = ref([])
 const role = ref(4) //role guru pamong
@@ -18,6 +18,26 @@ const accommodate = reactive({
 })
 
 onMounted(() => {
+  getUsersByRoleId()
+  getAccommodateById()
+})
+
+const getAccommodateById = () => {
+  axios
+    .get(`accommodate/tutor-teacher/${route.params.accommodateId}`, {
+      headers: {
+        Authorization: `Bearer ${sessionStorage.getItem('token')}`
+      }
+    })
+    .then((res) => {
+      accommodate.user = res.data.data.user_tutor_teacher
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+}
+
+const getUsersByRoleId = () => {
   axios
     .get(`users/${role.value}/role`, {
       headers: {
@@ -30,14 +50,13 @@ onMounted(() => {
     .catch((err) => {
       console.log(err)
     })
-})
+}
 
 const send = () => {
   axios
-    .post(
-      `accommodate/tutor-teacher`,
+    .put(
+      `accommodate/tutor-teacher/${route.params.accommodateId}`,
       {
-        user_id: parseInt(route.params.id),
         user_id_accommodate: accommodate.user.id
       },
       {
@@ -49,7 +68,7 @@ const send = () => {
     .then(() => {
       swal.fire({
         title: 'Success',
-        text: 'Guru pamong berhasil terhubung',
+        text: 'perubahan guru pamong berhasil terhubung',
         icon: 'success',
         confirmButtonText: 'Ok'
       })
@@ -76,7 +95,7 @@ const nameWithLang = ({ name }) => {
       <div class="flex justify-between">
         <div>
           <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Tambah hubungan guru pamong
+            Ubah hubungan guru pamong
           </h2>
         </div>
       </div>
