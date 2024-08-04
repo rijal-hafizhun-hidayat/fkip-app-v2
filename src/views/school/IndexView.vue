@@ -95,7 +95,7 @@ const showSchoolById = (schoolId) => {
                 class="block w-full"
                 type="text"
                 v-model="search.nameSchool"
-                placeholder="Cari Role"
+                placeholder="Cari berdasarkan nama sekola"
               ></TextInput>
             </div>
             <div>

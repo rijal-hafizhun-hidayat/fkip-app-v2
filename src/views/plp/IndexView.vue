@@ -95,7 +95,7 @@ const showPlpById = (plpId) => {
                 class="block w-full"
                 type="text"
                 v-model="search.namePlp"
-                placeholder="Cari Plp"
+                placeholder="Cari berdasarkan nama"
               ></TextInput>
             </div>
             <div>
