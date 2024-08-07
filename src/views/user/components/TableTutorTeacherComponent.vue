@@ -3,14 +3,19 @@ import PrimaryButton from '@/components/PrimaryButton.vue'
 import DangerButton from '@/components/DangerButton.vue'
 import WarningButton from '@/components/WarningButton.vue'
 import { useRouter, useRoute } from 'vue-router'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, inject } from 'vue'
 import axios from 'axios'
 
 const router = useRouter()
 const route = useRoute()
 const accommodates = ref([])
+const swal = inject('swal')
 
 onMounted(() => {
+  getTutorTeacherByUserId()
+})
+
+const getTutorTeacherByUserId = () => {
   axios
     .get('accommodate/tutor-teacher', {
       headers: {
@@ -26,7 +31,7 @@ onMounted(() => {
     .catch((err) => {
       console.log(err)
     })
-})
+}
 
 const createAccommodateTutorTeacher = () => {
   return router.push({
@@ -42,6 +47,28 @@ const showAccomodateTutorTeacherByAccomodateId = (accommodateId) => {
       accommodateId: accommodateId
     }
   })
+}
+
+const destroyAccommodateByAccommodateId = (accommodateId) => {
+  axios
+    .delete(`accommodate/${accommodateId}`, {
+      headers: {
+        Authorization: `Bearer ${sessionStorage.getItem('token')}`
+      }
+    })
+    .then(() => {
+      swal.fire({
+        title: 'Success',
+        text: 'Hubungan guru pamong berhasil dihapus',
+        icon: 'success',
+        confirmButtonText: 'Ok'
+      })
+
+      getTutorTeacherByUserId()
+    })
+    .catch((err) => {
+      console.log(err)
+    })
 }
 </script>
 <template>
@@ -72,14 +99,16 @@ const showAccomodateTutorTeacherByAccomodateId = (accommodateId) => {
                 <WarningButton @click="showAccomodateTutorTeacherByAccomodateId(accommodate.id)"
                   >Ubah</WarningButton
                 >
-                <DangerButton>Hapus</DangerButton>
+                <DangerButton @click="destroyAccommodateByAccommodateId(accommodate.id)"
+                  >Hapus</DangerButton
+                >
               </div>
             </td>
           </tr>
         </tbody>
         <tbody v-else>
           <tr>
-            <td class="py-4 text-center border-t" colspan="2">No data found.</td>
+            <td class="py-4 text-center border-t" colspan="3">No data found.</td>
           </tr>
         </tbody>
       </table>
