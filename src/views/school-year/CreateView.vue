@@ -41,7 +41,9 @@ const send = () => {
       })
     })
     .catch((err) => {
-      console.log(err)
+      if (err.response.status == 400) {
+        validation.value = err.response.data.errors
+      }
     })
 }
 </script>

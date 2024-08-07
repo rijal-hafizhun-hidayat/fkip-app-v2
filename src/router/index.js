@@ -2,6 +2,7 @@ import {
   createRouter,
   createWebHistory
 } from 'vue-router'
+import NProgress from 'nprogress';
 // import HomeView from '../views/HomeView.vue'
 import RegisterView from '@/views/register/RegisterView.vue'
 import LoginView from '@/views/login/LoginView.vue'
@@ -25,6 +26,8 @@ import UserDetailView from '../views/user/DetailView.vue'
 import UserAccommodateTutorTeacherCreateView from '../views/user/accommodate/tutor-teacher/CreateView.vue'
 import UserAccommodateTutorTeacherShowView from '../views/user/accommodate/tutor-teacher/ShowView.vue'
 import UserAccommodateDplCreateView from '../views/user/accommodate/dpl/CreateView.vue'
+import UserAccommodateCollegerCreateView from '../views/user/accommodate/colleger/CreateView.vue'
+import UserAccommodateCollegerShowView from '../views/user/accommodate/colleger/ShowView.vue'
 import ProfileIndexView from '../views/profile/IndexView.vue'
 import ProfileUserPlpCreateView from '../views/profile/CreateUserPlp.vue'
 import ProfileUserPlpShowView from '../views/profile/ShowUserPlp.vue'
@@ -210,12 +213,32 @@ const router = createRouter({
               }
             }]
           }, {
-            path: 'create-accommodate-dpl',
-            name: 'user.detail.create-accommodate-dpl',
-            component: UserAccommodateDplCreateView,
-            meta: {
-              requiresAuth: true
-            }
+            path: 'accommodate-dpl',
+            children: [{
+              path: 'create',
+              name: 'user.detail.create-accommodate-dpl',
+              component: UserAccommodateDplCreateView,
+              meta: {
+                requiresAuth: true
+              }
+            }]
+          }, {
+            path: 'accommodate-colleger',
+            children: [{
+              path: 'create',
+              name: 'user.detail.accommodate-colleger.create',
+              component: UserAccommodateCollegerCreateView,
+              meta: {
+                requiresAuth: true
+              }
+            }, {
+              path: ':accommodateId',
+              name: 'user.detail.accommodate-colleger.show',
+              component: UserAccommodateCollegerShowView,
+              meta: {
+                requiresAuth: true
+              }
+            }]
           }]
         }]
       }]
@@ -265,6 +288,20 @@ router.beforeEach((to) => {
       name: 'login'
     }
   }
+})
+
+router.beforeResolve((to, from, next) => {
+  // If this isn't an initial page load.
+  if (to.name) {
+    // Start the route progress bar.
+    NProgress.start()
+  }
+  next()
+})
+
+router.afterEach(() => {
+  // Complete the animation of the route progress bar.
+  NProgress.done()
 })
 
 export default router

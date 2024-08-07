@@ -2,6 +2,7 @@
 import AuthLayout from '@/layouts/AuthLayout.vue'
 import PrimaryButton from '@/components/PrimaryButton.vue'
 import InputLabel from '@/components/InputLabel.vue'
+import InputError from '@/components/InputError.vue'
 import Multiselect from 'vue-multiselect'
 import { onMounted, reactive, ref, inject } from 'vue'
 import axios from 'axios'
@@ -10,6 +11,7 @@ import { useRoute, useRouter } from 'vue-router'
 const swal = inject('swal')
 const router = useRouter()
 const route = useRoute()
+const validation = ref([])
 const users = ref([])
 const role = ref(4) //role guru pamong
 
@@ -62,7 +64,9 @@ const send = () => {
       })
     })
     .catch((err) => {
-      console.log(err)
+      if (err.response.status == 400) {
+        validation.value = err.response.data.errors
+      }
     })
 }
 
@@ -96,6 +100,10 @@ const nameWithLang = ({ name }) => {
                 label="name"
                 track-by="name"
               ></multiselect>
+              <InputError
+                v-if="validation.user_id_accommodate"
+                :message="validation.user_id_accommodate._errors[0]"
+              />
             </div>
             <div>
               <PrimaryButton type="submit">Simpan</PrimaryButton>
