@@ -32,7 +32,7 @@ const myProfile = () => {
           <div class="flex justify-between h-16">
             <div class="flex">
               <div class="flex items-center">
-                <ApplicationLogo class="block h-12 fill-current text-gray-800" />
+                <ApplicationLogo class="block fill-current text-gray-800" />
               </div>
               <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
                 <RouterLink

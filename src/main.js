@@ -1,6 +1,7 @@
 // import './assets/main.css'
 import "./style.css";
 import 'vue-multiselect/dist/vue-multiselect.css';
+import '../node_modules/nprogress/nprogress.css'
 import moment from "moment";
 import axios from 'axios'
 import Swal from 'sweetalert2'
