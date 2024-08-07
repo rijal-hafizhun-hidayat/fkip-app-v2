@@ -8,18 +8,38 @@ import { onMounted, reactive, ref, inject } from 'vue'
 import axios from 'axios'
 import { useRoute, useRouter } from 'vue-router'
 
-const swal = inject('swal')
 const router = useRouter()
+const swal = inject('swal')
 const route = useRoute()
 const validation = ref([])
 const users = ref([])
-const role = ref(4) //role guru pamong
+const role = ref(3) //role dpl
 
 const accommodate = reactive({
   user: ''
 })
 
 onMounted(() => {
+  getUsersByRoleId()
+  getAccommodateById()
+})
+
+const getAccommodateById = () => {
+  axios
+    .get(`accommodate/dpl/${route.params.accommodateId}`, {
+      headers: {
+        Authorization: `Bearer ${sessionStorage.getItem('token')}`
+      }
+    })
+    .then((res) => {
+      accommodate.user = res.data.data.user_dpl
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+}
+
+const getUsersByRoleId = () => {
   axios
     .get(`users/${role.value}/role`, {
       headers: {
@@ -32,14 +52,13 @@ onMounted(() => {
     .catch((err) => {
       console.log(err)
     })
-})
+}
 
 const send = () => {
   axios
-    .post(
-      `accommodate/tutor-teacher`,
+    .put(
+      `accommodate/dpl/${route.params.accommodateId}`,
       {
-        user_id: parseInt(route.params.id),
         user_id_accommodate: accommodate.user ? accommodate.user.id : ''
       },
       {
@@ -51,7 +70,7 @@ const send = () => {
     .then(() => {
       swal.fire({
         title: 'Success',
-        text: 'Guru pamong berhasil terhubung',
+        text: 'perubahan dpl berhasil terhubung',
         icon: 'success',
         confirmButtonText: 'Ok'
       })
@@ -67,15 +86,6 @@ const send = () => {
       if (err.response.status == 400) {
         validation.value = err.response.data.errors
       }
-
-      if (err.response.status === 404) {
-        swal.fire({
-          title: 'error',
-          text: err.response.data.errors,
-          icon: 'error',
-          confirmButtonText: 'Ok'
-        })
-      }
     })
 }
 
@@ -88,9 +98,7 @@ const nameWithLang = ({ name }) => {
     <template #header>
       <div class="flex justify-between">
         <div>
-          <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Tambah hubungan guru pamong
-          </h2>
+          <h2 class="font-semibold text-xl text-gray-800 leading-tight">Ubah hubungan DPL</h2>
         </div>
       </div>
     </template>
@@ -100,7 +108,7 @@ const nameWithLang = ({ name }) => {
         <div class="whitespace-nowrap">
           <form @submit.prevent="send()" class="space-y-4">
             <div>
-              <InputLabel>Guru Pamong</InputLabel>
+              <InputLabel>DPL</InputLabel>
               <multiselect
                 v-model="accommodate.user"
                 :options="users"
