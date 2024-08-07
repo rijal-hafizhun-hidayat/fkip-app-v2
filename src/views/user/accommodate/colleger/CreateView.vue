@@ -4,42 +4,21 @@ import PrimaryButton from '@/components/PrimaryButton.vue'
 import InputLabel from '@/components/InputLabel.vue'
 import InputError from '@/components/InputError.vue'
 import Multiselect from 'vue-multiselect'
-import { onMounted, reactive, ref, inject } from 'vue'
+import { onMounted, ref, reactive, inject } from 'vue'
 import axios from 'axios'
 import { useRoute, useRouter } from 'vue-router'
 
-const router = useRouter()
-const swal = inject('swal')
 const route = useRoute()
+const swal = inject('swal')
+const router = useRouter()
 const validation = ref([])
+const role = ref([2])
 const users = ref([])
-const role = ref(4) //role guru pamong
-
 const accommodate = reactive({
   user: ''
 })
 
 onMounted(() => {
-  getUsersByRoleId()
-  getAccommodateById()
-})
-
-const getAccommodateById = () => {
-  axios
-    .get(`accommodate/tutor-teacher/${route.params.accommodateId}`, {
-      headers: {
-        Authorization: `Bearer ${sessionStorage.getItem('token')}`
-      }
-    })
-    .then((res) => {
-      accommodate.user = res.data.data.user_tutor_teacher
-    })
-    .catch((err) => {
-      console.log(err)
-    })
-}
-
-const getUsersByRoleId = () => {
   axios
     .get(`users/${role.value}/role`, {
       headers: {
@@ -52,14 +31,15 @@ const getUsersByRoleId = () => {
     .catch((err) => {
       console.log(err)
     })
-}
+})
 
 const send = () => {
   axios
-    .put(
-      `accommodate/tutor-teacher/${route.params.accommodateId}`,
+    .post(
+      'accommodate/colleger',
       {
-        user_id_accommodate: accommodate.user.id
+        user_id: parseInt(route.params.id),
+        user_id_accommodate: accommodate.user ? accommodate.user.id : ''
       },
       {
         headers: {
@@ -70,7 +50,7 @@ const send = () => {
     .then(() => {
       swal.fire({
         title: 'Success',
-        text: 'perubahan guru pamong berhasil terhubung',
+        text: 'Mahasiswa berhasil terhubung',
         icon: 'success',
         confirmButtonText: 'Ok'
       })
@@ -83,8 +63,17 @@ const send = () => {
       })
     })
     .catch((err) => {
-      if (err.response.status == 400) {
+      if (err.response.status === 400) {
         validation.value = err.response.data.errors
+      }
+
+      if (err.response.status === 404) {
+        swal.fire({
+          title: 'error',
+          text: err.response.data.errors,
+          icon: 'error',
+          confirmButtonText: 'Ok'
+        })
       }
     })
 }
@@ -99,7 +88,7 @@ const nameWithLang = ({ name }) => {
       <div class="flex justify-between">
         <div>
           <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Ubah hubungan guru pamong
+            Tambah hubungan mahasiswa
           </h2>
         </div>
       </div>
@@ -110,7 +99,7 @@ const nameWithLang = ({ name }) => {
         <div class="whitespace-nowrap">
           <form @submit.prevent="send()" class="space-y-4">
             <div>
-              <InputLabel>Guru Pamong</InputLabel>
+              <InputLabel>Mahasiswa</InputLabel>
               <multiselect
                 v-model="accommodate.user"
                 :options="users"
