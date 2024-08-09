@@ -3,12 +3,13 @@ import PrimaryButton from '@/components/PrimaryButton.vue'
 import DangerButton from '@/components/DangerButton.vue'
 import WarningButton from '@/components/WarningButton.vue'
 import { useRouter, useRoute } from 'vue-router'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, inject } from 'vue'
 import axios from 'axios'
 
 const route = useRoute()
 const router = useRouter()
 const accommodates = ref([])
+const swal = inject('swal')
 
 onMounted(() => {
   getAccommodateDplByUserId()
@@ -46,6 +47,28 @@ const showAccommodateDplByAccommodateId = (accommodateId) => {
     }
   })
 }
+
+const destroyAccommodateDplByAccommodateId = (accommodateId) => {
+  axios
+    .delete(`accommodate/${accommodateId}`, {
+      headers: {
+        Authorization: `Bearer ${sessionStorage.getItem('token')}`
+      }
+    })
+    .then(() => {
+      swal.fire({
+        title: 'Success',
+        text: 'Hubungan guru pamong berhasil dihapus',
+        icon: 'success',
+        confirmButtonText: 'Ok'
+      })
+
+      getAccommodateDplByUserId()
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+}
 </script>
 <template>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -73,7 +96,9 @@ const showAccommodateDplByAccommodateId = (accommodateId) => {
                 <WarningButton @click="showAccommodateDplByAccommodateId(accommodate.id)"
                   >Ubah</WarningButton
                 >
-                <DangerButton>Hapus</DangerButton>
+                <DangerButton @click="destroyAccommodateDplByAccommodateId(accommodate.id)"
+                  >Hapus</DangerButton
+                >
               </div>
             </td>
           </tr>
