@@ -32,6 +32,9 @@ import UserAccommodateCollegerShowView from '../views/user/accommodate/colleger/
 import ProfileIndexView from '../views/profile/IndexView.vue'
 import ProfileUserPlpCreateView from '../views/profile/CreateUserPlp.vue'
 import ProfileUserPlpShowView from '../views/profile/ShowUserPlp.vue'
+import ProdiIndexView from '../views/prodi/IndexView.vue'
+import ProdiCreateView from '../views/prodi/CreateView.vue'
+import ProdiShowView from '../views/prodi/ShowView.vue'
 
 const router = createRouter({
   history: createWebHistory(
@@ -277,6 +280,31 @@ const router = createRouter({
             requiresAuth: true
           }
         }]
+      }]
+    },
+    {
+      path: '/prodi',
+      children: [{
+        path: '',
+        name: 'prodi.index',
+        component: ProdiIndexView,
+        meta: {
+          requiresAuth: true
+        }
+      }, {
+        path: 'create',
+        name: 'prodi.create',
+        component: ProdiCreateView,
+        meta: {
+          requiresAuth: true
+        }
+      }, {
+        path: ':id',
+        name: 'prodi.show',
+        component: ProdiShowView,
+        meta: {
+          requiresAuth: true
+        }
       }]
     },
     {
