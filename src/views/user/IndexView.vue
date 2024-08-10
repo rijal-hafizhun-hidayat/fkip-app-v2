@@ -16,7 +16,7 @@ const page = ref(1)
 const moment = inject('moment')
 const swal = inject('swal')
 const search = reactive({
-  query: '',
+  q: '',
   role: ''
 })
 
@@ -32,13 +32,10 @@ const getUsers = () => {
         Authorization: `Bearer ${sessionStorage.getItem('token')}`
       },
       params: {
-        page: page.value,
-        search: search.query,
-        role_id: search.role.id ?? ''
+        page: page.value
       }
     })
     .then((res) => {
-      console.log(res)
       users.value = res.data.data
     })
     .catch((err) => {
@@ -55,26 +52,6 @@ const getRoles = () => {
     })
     .then((res) => {
       roles.value = res.data.data
-    })
-    .catch((err) => {
-      console.log(err)
-    })
-}
-
-const searchUsers = () => {
-  axios
-    .get('users', {
-      headers: {
-        Authorization: `Bearer ${sessionStorage.getItem('token')}`
-      },
-      params: {
-        page: page.value,
-        search: search.query,
-        role_id: search.role.id
-      }
-    })
-    .then((res) => {
-      users.value = res.data.data
     })
     .catch((err) => {
       console.log(err)
@@ -112,6 +89,26 @@ const destroyUserById = (userId) => {
     })
 }
 
+const getUsersByParams = () => {
+  axios
+    .get('users/search', {
+      headers: {
+        Authorization: `Bearer ${sessionStorage.getItem('token')}`
+      },
+      params: {
+        q: search.q,
+        role_id: search.role ? search.role.id : ''
+      }
+    })
+    .then((res) => {
+      console.log(res)
+      users.value = res.data.data
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+}
+
 const detailUserById = (userId) => {
   return router.push({
     name: 'user.detail',
@@ -142,28 +139,32 @@ const nameWithLang = ({ name }) => {
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="bg-white mt-10 px-4 py-6 rounded shadow-md">
-        <form @submit.prevent="searchUsers()">
-          <div class="grid grid-cols-3 gap-4">
+        <form @submit.prevent="getUsersByParams()">
+          <div class="grid grid-rows-1 sm:grid-cols-4 gap-4">
             <div>
               <TextInput
                 class="block w-full"
                 type="text"
-                v-model="search.query"
+                v-model="search.q"
                 placeholder="Cari berdasarkan nama atau email"
               ></TextInput>
             </div>
             <div>
               <multiselect
+                class="block w-full"
                 v-model="search.role"
                 :options="roles"
                 :custom-label="nameWithLang"
-                placeholder="Select one"
+                placeholder="Select"
                 label="name"
                 track-by="name"
               ></multiselect>
             </div>
             <div>
-              <PrimaryButton class="mt-1" type="submit">Cari</PrimaryButton>
+              <PrimaryButton class="my-1" type="submit">Cari</PrimaryButton>
+            </div>
+            <div>
+              <PrimaryButton class="my-1" @click="getUsers()">Reset</PrimaryButton>
             </div>
           </div>
         </form>
