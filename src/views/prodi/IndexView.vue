@@ -1,14 +1,19 @@
 <script setup>
 import AuthLayout from '@/layouts/AuthLayout.vue'
-import WarningButton from '../../components/WarningButton.vue'
-import DangerButton from '../../components/DangerButton.vue'
-import { onMounted, ref, inject } from 'vue'
+import WarningButton from '@/components/WarningButton.vue'
+import DangerButton from '@/components/DangerButton.vue'
+import PrimaryButton from '@/components/PrimaryButton.vue'
+import TextInput from '@/components/TextInput.vue'
+import { onMounted, ref, reactive, inject } from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
 
 const swal = inject('swal')
 const router = useRouter()
 const prodis = ref([])
+const form = reactive({
+  search: ''
+})
 
 onMounted(() => {
   getProdi()
@@ -23,7 +28,6 @@ const getProdi = () => {
     })
     .then((res) => {
       prodis.value = res.data.data
-      console.log(prodis)
     })
     .catch((err) => {
       console.log(err)
@@ -60,6 +64,25 @@ const destroyProdiByProdiId = (prodiId) => {
       console.log(err)
     })
 }
+
+const searchProdisByParams = () => {
+  axios
+    .get('prodi/search', {
+      headers: {
+        Authorization: `Bearer ${sessionStorage.getItem('token')}`
+      },
+      params: {
+        q: form.search
+      }
+    })
+    .then((res) => {
+      console.log(res)
+      prodis.value = res.data.data
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+}
 </script>
 <template>
   <AuthLayout>
@@ -75,6 +98,21 @@ const destroyProdiByProdiId = (prodiId) => {
         </div>
       </div>
     </template>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="bg-white mt-10 px-4 py-6 rounded shadow-md overflow-x-auto">
+        <form @submit.prevent="searchProdisByParams()">
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <TextInput v-model="form.search" class="mt-1 block w-full" type="text" />
+            </div>
+            <div>
+              <PrimaryButton type="submit" class="my-2">Cari</PrimaryButton>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="bg-white mt-10 px-4 py-6 rounded shadow-md overflow-x-auto">
