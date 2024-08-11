@@ -13,7 +13,7 @@ const schools = ref([])
 const moment = inject('moment')
 const swal = inject('swal')
 const search = reactive({
-  nameSchool: null
+  nameSchool: ''
 })
 
 onMounted(() => {
@@ -28,7 +28,6 @@ const getSchools = () => {
       }
     })
     .then((res) => {
-      console.log(res)
       schools.value = res.data.data
     })
     .catch((err) => {
@@ -37,7 +36,23 @@ const getSchools = () => {
 }
 
 const searchSchool = () => {
-  console.log(search)
+  axios
+    .get('school/search', {
+      headers: {
+        Authorization: `Bearer ${sessionStorage.getItem('token')}`
+      },
+      params: {
+        q: search.nameSchool
+      }
+    })
+    .then((res) => {
+      console.log(res)
+      schools.value = res.data.data
+      console.log(schools.value)
+    })
+    .catch((err) => {
+      console.log(err)
+    })
 }
 
 const destroySchoolById = (schoolId) => {
@@ -95,7 +110,7 @@ const showSchoolById = (schoolId) => {
                 class="block w-full"
                 type="text"
                 v-model="search.nameSchool"
-                placeholder="Cari berdasarkan nama sekola"
+                placeholder="Cari berdasarkan nama sekolah"
               ></TextInput>
             </div>
             <div>
@@ -155,7 +170,7 @@ const showSchoolById = (schoolId) => {
             </tr>
           </tbody>
           <tbody v-else>
-            <td class="py-4 text-center border-t" colspan="5">No data found.</td>
+            <td class="py-4 text-center border-t" colspan="6">No data found.</td>
           </tbody>
         </table>
       </div>
