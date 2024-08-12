@@ -13,15 +13,38 @@ const router = useRouter()
 const validation = ref([])
 const swal = inject('swal')
 const roles = ref([])
+const prodis = ref([])
 const user = reactive({
   name: null,
   username: null,
   email: null,
   password: null,
-  role: ''
+  role: '',
+  prodi: ''
 })
 
 onMounted(() => {
+  getRoles()
+  getProdis()
+})
+
+const getProdis = () => {
+  axios
+    .get('prodi', {
+      headers: {
+        Authorization: `Bearer ${sessionStorage.getItem('token')}`
+      }
+    })
+    .then((res) => {
+      console.log(res)
+      prodis.value = res.data.data
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+}
+
+const getRoles = () => {
   axios
     .get('role', {
       headers: {
@@ -35,7 +58,7 @@ onMounted(() => {
     .catch((err) => {
       console.log(err)
     })
-})
+}
 
 const send = () => {
   axios
@@ -46,7 +69,8 @@ const send = () => {
         username: user.username,
         email: user.email,
         password: user.password,
-        role_id: user.role.id
+        role_id: user.role.id,
+        prodi_id: user.prodi.id
       },
       {
         headers: {
@@ -55,6 +79,7 @@ const send = () => {
       }
     )
     .then(() => {
+      //console.log(res)
       swal.fire({
         title: 'Success',
         text: 'Tambah pengguna berhasil',
@@ -127,6 +152,18 @@ const nameWithLang = ({ name }) => {
                 track-by="name"
               ></multiselect>
               <InputError v-if="validation.role_id" :message="validation.role_id._errors[0]" />
+            </div>
+            <div v-if="user.role.name === 'mahasiswa'">
+              <InputLabel>Prodi</InputLabel>
+              <multiselect
+                v-model="user.prodi"
+                :options="prodis"
+                :custom-label="nameWithLang"
+                placeholder="Select one"
+                label="name"
+                track-by="name"
+              ></multiselect>
+              <InputError v-if="validation.prodi_id" :message="validation.prodi_id._errors[0]" />
             </div>
             <div>
               <PrimaryButton type="submit">Simpan</PrimaryButton>
