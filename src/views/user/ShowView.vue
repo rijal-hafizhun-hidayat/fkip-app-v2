@@ -14,17 +14,35 @@ const router = useRouter()
 const validation = ref([])
 const swal = inject('swal')
 const roles = ref([])
+const prodis = ref([])
 const user = reactive({
   name: null,
   username: null,
   email: null,
-  role: ''
+  role: '',
+  prodi: ''
 })
 
 onMounted(() => {
-  getUserById()
   getRoles()
+  getProdis()
+  getUserById()
 })
+
+const getProdis = () => {
+  axios
+    .get('prodi', {
+      headers: {
+        Authorization: `Bearer ${sessionStorage.getItem('token')}`
+      }
+    })
+    .then((res) => {
+      prodis.value = res.data.data
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+}
 
 const getUserById = () => {
   axios
@@ -39,6 +57,7 @@ const getUserById = () => {
       user.username = res.data.data.username
       user.email = res.data.data.email
       user.role = res.data.data.roles[0].role
+      user.prodi = res.data.data.prodis.length > 0 ? res.data.data.prodis[0].prodi : ''
     })
     .catch((err) => {
       console.log(err)
@@ -68,7 +87,8 @@ const send = () => {
         name: user.name,
         username: user.username,
         email: user.email,
-        role_id: user.role.id
+        role_id: user.role.id,
+        prodi_id: user.prodi.id
       },
       {
         headers: {
@@ -137,6 +157,18 @@ const nameWithLang = ({ name }) => {
                 track-by="name"
               ></multiselect>
               <InputError v-if="validation.role_id" :message="validation.role_id._errors[0]" />
+            </div>
+            <div v-if="user.role.name === 'mahasiswa'">
+              <InputLabel>Prodi</InputLabel>
+              <multiselect
+                v-model="user.prodi"
+                :options="prodis"
+                :custom-label="nameWithLang"
+                placeholder="Select one"
+                label="name"
+                track-by="name"
+              ></multiselect>
+              <InputError v-if="validation.prodi_id" :message="validation.prodi_id._errors[0]" />
             </div>
             <div>
               <PrimaryButton type="submit">Simpan</PrimaryButton>
