@@ -19,6 +19,18 @@ import router from './router'
 axios.defaults.baseURL = 'http://localhost:3000/api';
 axios.defaults.withCredentials = true
 
+//interceptor token
+axios.interceptors.response.use(function (response) {
+    // Any status code that lie within the range of 2xx cause this function to trigger
+    // Do something with response data
+    return response;
+}, function (error) {
+    console.log(error)
+    // Any status codes that falls outside the range of 2xx cause this function to trigger
+    // Do something with response error
+    return Promise.reject(error);
+});
+
 moment.locale('id');
 
 const app = createApp(App)

@@ -64,6 +64,7 @@ const send = () => {
       })
     })
     .catch((err) => {
+      console.log(err)
       if (err.response.status == 400) {
         validation.value = err.response.data.errors
       }
@@ -103,6 +104,10 @@ const nameWithLang = ({ name }) => {
                 label="name"
                 track-by="name"
               ></multiselect>
+              <InputError
+                v-if="validation.school_year_id"
+                :message="validation.school_year_id._errors[0]"
+              />
             </div>
             <div>
               <PrimaryButton type="submit">Simpan</PrimaryButton>

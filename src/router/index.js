@@ -35,6 +35,8 @@ import ProfileUserPlpShowView from '../views/profile/ShowUserPlp.vue'
 import ProdiIndexView from '../views/prodi/IndexView.vue'
 import ProdiCreateView from '../views/prodi/CreateView.vue'
 import ProdiShowView from '../views/prodi/ShowView.vue'
+import UserGuidanceIndexView from '../views/user/guidance/IndexView.vue'
+import UserGuidanceCreateView from '../views/user/guidance/CreateView.vue'
 
 const router = createRouter({
   history: createWebHistory(
@@ -250,6 +252,23 @@ const router = createRouter({
                 requiresAuth: true
               }
             }]
+          }]
+        }, {
+          path: 'guidance',
+          children: [{
+            path: '',
+            name: 'user.guidance.index',
+            component: UserGuidanceIndexView,
+            meta: {
+              requiresAuth: true
+            }
+          }, {
+            path: 'create',
+            name: 'user.guidance.create',
+            component: UserGuidanceCreateView,
+            meta: {
+              requiresAuth: true
+            }
           }]
         }]
       }]

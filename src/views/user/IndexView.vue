@@ -1,9 +1,10 @@
 <script setup>
-import AuthLayout from '../../layouts/AuthLayout.vue'
-import DangerButton from '../../components/DangerButton.vue'
-import WarningButton from '../../components/WarningButton.vue'
-import TextInput from '../../components/TextInput.vue'
-import PrimaryButton from '../../components/PrimaryButton.vue'
+import AuthLayout from '@/layouts/AuthLayout.vue'
+import DangerButton from '@/components/DangerButton.vue'
+import WarningButton from '@/components/WarningButton.vue'
+import TextInput from '@/components/TextInput.vue'
+import PrimaryButton from '@/components/PrimaryButton.vue'
+import CyanButton from '@/components/CyanButton.vue'
 import Multiselect from 'vue-multiselect'
 import { onMounted, ref, reactive, inject } from 'vue'
 import axios from 'axios'
@@ -61,6 +62,15 @@ const getRoles = () => {
 const showUserById = (userId) => {
   return router.push({
     name: 'user.show',
+    params: {
+      id: userId
+    }
+  })
+}
+
+const showGuidanceByUserId = (userId) => {
+  return router.push({
+    name: 'user.guidance.index',
     params: {
       id: userId
     }
@@ -214,6 +224,7 @@ const nameWithLang = ({ name }) => {
                   <PrimaryButton @click="detailUserById(user.id)">Detail</PrimaryButton>
                   <WarningButton @click="showUserById(user.id)">Ubah</WarningButton>
                   <DangerButton @click="destroyUserById(user.id)">Hapus</DangerButton>
+                  <CyanButton @click="showGuidanceByUserId(user.id)">Bimbingan</CyanButton>
                 </div>
               </td>
             </tr>
