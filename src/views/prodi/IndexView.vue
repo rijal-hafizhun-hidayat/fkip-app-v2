@@ -148,7 +148,7 @@ const searchProdisByParams = () => {
           </tbody>
           <tbody v-else>
             <tr>
-              <td class="px-6 py-4 text-center border-t" colspan="3">No data found.</td>
+              <td class="px-6 py-4 text-center border-t" colspan="5">No data found.</td>
             </tr>
           </tbody>
         </table>
