@@ -220,11 +220,15 @@ const nameWithLang = ({ name }) => {
                 {{ moment(user.updated_at).format('DD MMMM YYYY') }}
               </td>
               <td class="border-t items-center px-6 py-4">
-                <div class="space-x-4">
+                <div v-for="userRole in user.roles" :key="userRole.role.id" class="space-x-4">
                   <PrimaryButton @click="detailUserById(user.id)">Detail</PrimaryButton>
                   <WarningButton @click="showUserById(user.id)">Ubah</WarningButton>
                   <DangerButton @click="destroyUserById(user.id)">Hapus</DangerButton>
-                  <CyanButton @click="showGuidanceByUserId(user.id)">Bimbingan</CyanButton>
+                  <CyanButton
+                    v-if="userRole.role.name === 'mahasiswa' || userRole.role.name === 'dpl'"
+                    @click="showGuidanceByUserId(user.id)"
+                    >Bimbingan</CyanButton
+                  >
                 </div>
               </td>
             </tr>
