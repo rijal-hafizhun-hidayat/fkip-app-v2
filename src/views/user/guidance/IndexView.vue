@@ -90,6 +90,7 @@ const destroyGuidanceByGuidanceId = (guidanceId) => {
               <th class="pb-4 pt-6 px-6">Keterangan bimnbingan</th>
               <th class="pb-4 pt-6 px-6">Tahapan bimbingan</th>
               <th class="pb-4 pt-6 px-6">Catatan bimbingan</th>
+              <th class="pb-4 pt-6 px-6">Status</th>
               <th class="pb-4 pt-6 px-6">Link</th>
               <th class="pb-4 pt-6 px-6">Aksi</th>
             </tr>
@@ -113,6 +114,9 @@ const destroyGuidanceByGuidanceId = (guidanceId) => {
                 {{ userGuidance.guidance.guidance_note ?? '-' }}
               </td>
               <td class="border-t items-center px-6 py-4">
+                {{ userGuidance.guidance.status }}
+              </td>
+              <td class="border-t items-center px-6 py-4">
                 <HrefButton :href="userGuidance.guidance.link" target="_blank">Link</HrefButton>
               </td>
               <td class="border-t items-center px-6 py-4">
@@ -128,7 +132,7 @@ const destroyGuidanceByGuidanceId = (guidanceId) => {
             </tr>
           </tbody>
           <tbody v-else>
-            <td class="py-4 text-center border-t" colspan="6">No data found.</td>
+            <td class="py-4 text-center border-t" colspan="7">No data found.</td>
           </tbody>
         </table>
       </div>
