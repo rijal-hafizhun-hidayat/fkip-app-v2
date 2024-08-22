@@ -2,14 +2,21 @@
 import AuthLayout from '@/layouts/AuthLayout.vue'
 import WarningButton from '@/components/WarningButton.vue'
 import DangerButton from '@/components/DangerButton.vue'
-import { onMounted, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import HrefButton from '@/components/HrefButton.vue'
+import { onMounted, ref, inject } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
 
+const swal = inject('swal')
+const router = useRouter()
 const route = useRoute()
 const userGuidances = ref([])
 
 onMounted(() => {
+  getUserGuidanceByUserId()
+})
+
+const getUserGuidanceByUserId = () => {
   axios
     .get('guidance', {
       headers: {
@@ -26,7 +33,38 @@ onMounted(() => {
     .catch((err) => {
       console.log(err)
     })
-})
+}
+
+const showGuidanceByGuidanceId = (guidanceId) => {
+  return router.push({
+    name: 'user.guidance.show',
+    params: {
+      guidanceId: guidanceId
+    }
+  })
+}
+
+const destroyGuidanceByGuidanceId = (guidanceId) => {
+  axios
+    .delete(`guidance/${guidanceId}`, {
+      headers: {
+        Authorization: `Bearer ${sessionStorage.getItem('token')}`
+      }
+    })
+    .then(() => {
+      swal.fire({
+        title: 'Success',
+        text: 'Hapus bimbingan berhasil',
+        icon: 'success',
+        confirmButtonText: 'Ok'
+      })
+
+      getUserGuidanceByUserId()
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+}
 </script>
 <template>
   <AuthLayout>
@@ -75,18 +113,22 @@ onMounted(() => {
                 {{ userGuidance.guidance.guidance_note ?? '-' }}
               </td>
               <td class="border-t items-center px-6 py-4">
-                {{ userGuidance.guidance.link ?? '-' }}
+                <HrefButton :href="userGuidance.guidance.link" target="_blank">Link</HrefButton>
               </td>
               <td class="border-t items-center px-6 py-4">
                 <div class="space-x-4">
-                  <WarningButton>Ubah</WarningButton>
-                  <DangerButton>Hapus</DangerButton>
+                  <WarningButton @click="showGuidanceByGuidanceId(userGuidance.guidance.id)"
+                    >Ubah</WarningButton
+                  >
+                  <DangerButton @click="destroyGuidanceByGuidanceId(userGuidance.guidance.id)"
+                    >Hapus</DangerButton
+                  >
                 </div>
               </td>
             </tr>
           </tbody>
           <tbody v-else>
-            <td class="py-4 text-center border-t" colspan="5">No data found.</td>
+            <td class="py-4 text-center border-t" colspan="6">No data found.</td>
           </tbody>
         </table>
       </div>
