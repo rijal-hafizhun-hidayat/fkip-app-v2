@@ -37,6 +37,7 @@ import ProdiCreateView from '../views/prodi/CreateView.vue'
 import ProdiShowView from '../views/prodi/ShowView.vue'
 import UserGuidanceIndexView from '../views/user/guidance/IndexView.vue'
 import UserGuidanceCreateView from '../views/user/guidance/CreateView.vue'
+import UserGuidanceShowView from '../views/user/guidance/ShowView.vue'
 
 const router = createRouter({
   history: createWebHistory(
@@ -266,6 +267,13 @@ const router = createRouter({
             path: 'create',
             name: 'user.guidance.create',
             component: UserGuidanceCreateView,
+            meta: {
+              requiresAuth: true
+            }
+          }, {
+            path: ':guidanceId',
+            name: 'user.guidance.show',
+            component: UserGuidanceShowView,
             meta: {
               requiresAuth: true
             }

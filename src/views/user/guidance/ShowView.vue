@@ -5,7 +5,7 @@ import InputError from '@/components/InputError.vue'
 import PrimaryButton from '@/components/PrimaryButton.vue'
 import AuthLayout from '@/layouts/AuthLayout.vue'
 import Multiselect from 'vue-multiselect'
-import { reactive, ref, inject } from 'vue'
+import { reactive, ref, inject, onMounted } from 'vue'
 import axios from 'axios'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -13,34 +13,39 @@ const swal = inject('swal')
 const router = useRouter()
 const route = useRoute()
 const validation = ref([])
-const guidanceStages = ref([
-  {
-    name: 'Luaran'
-  },
-  {
-    name: 'Pra Pelaksana'
-  },
-  {
-    name: 'Perangkat'
-  },
-  {
-    name: 'Praktik Pembelajaran'
-  }
-])
+const guidanceStages = ref(['Luarans', 'Pra Pelaksana', 'Perangkat', 'Praktik Pembelajaran'])
 const form = reactive({
   user_id: parseInt(route.params.id),
   guidance_statement: '',
   guidance_stage: '',
   link: ''
 })
+
+onMounted(() => {
+  axios
+    .get(`guidance/${route.params.guidanceId}`, {
+      headers: {
+        Authorization: `Bearer ${sessionStorage.getItem('token')}`
+      }
+    })
+    .then((res) => {
+      form.guidance_statement = res.data.data.guidance_statement
+      form.guidance_stage = res.data.data.guidance_stage
+      form.link = res.data.data.link
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+})
+
 const send = () => {
   axios
-    .post(
-      'guidance',
+    .put(
+      `guidance/${route.params.guidanceId}`,
       {
         user_id: form.user_id,
         guidance_statement: form.guidance_statement,
-        guidance_stage: form.guidance_stage ? form.guidance_stage.name : '',
+        guidance_stage: form.guidance_stage,
         link: form.link
       },
       {
@@ -52,7 +57,7 @@ const send = () => {
     .then(() => {
       swal.fire({
         title: 'Success',
-        text: 'Tambah bimbingan berhasil',
+        text: 'Ubah bimbingan berhasil',
         icon: 'success',
         confirmButtonText: 'Ok'
       })
@@ -65,14 +70,8 @@ const send = () => {
       })
     })
     .catch((err) => {
-      if (err.response.status == 400) {
-        validation.value = err.response.data.errors
-      }
+      console.log(err)
     })
-}
-
-const nameWithLang = ({ name }) => {
-  return `${name}`
 }
 </script>
 <template>
@@ -80,7 +79,7 @@ const nameWithLang = ({ name }) => {
     <template #header>
       <div class="flex justify-between">
         <div>
-          <h2 class="font-semibold text-xl text-gray-800 leading-tight">Tambah bimbingan</h2>
+          <h2 class="font-semibold text-xl text-gray-800 leading-tight">Ubah bimbingan</h2>
         </div>
       </div>
     </template>
@@ -107,10 +106,7 @@ const nameWithLang = ({ name }) => {
               <multiselect
                 v-model="form.guidance_stage"
                 :options="guidanceStages"
-                :custom-label="nameWithLang"
                 placeholder="Select one"
-                label="name"
-                track-by="name"
               ></multiselect>
               <InputError
                 v-if="validation.guidance_stage"
